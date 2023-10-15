@@ -1,0 +1,6 @@
+@FinanceSystemAPI_HostAddress = http://localhost:5072
+
+GET {{FinanceSystemAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

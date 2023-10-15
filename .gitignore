@@ -42,3 +42,10 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+/.vs
+/FinanceSystemAPI/.vs
+/FinanceSystemAPI/bin/Debug/net8.0
+/FinanceSystemAPI/obj
+/Test/bin/Debug/net8.0
+/Test/obj
+/Test/Pages
