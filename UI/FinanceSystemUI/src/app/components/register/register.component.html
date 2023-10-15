@@ -4,21 +4,32 @@
 
     <div class="login-card">
         <h3>Rejestracja</h3>
-        <div class="input-block">
-            <label for="email">E-mail</label>
-            <input type="text" id="email">
-        </div>
-        
-        <div class="input-block">
-            <label for="password">Hasło</label>
-            <input type="password" id="password">
-        </div>
-        <div class="input-block">
-            <label for="passwordAgain">Powtórz hasło</label>
-            <input type="password" id="passwordAgain">
-        </div>
+        <form name="registerForm" (ngSubmit)="onSubmit()">
+            <div class="input-block">
+                <label for="email">E-mail</label>
+                <input type="text" id="email" [(ngModel)]="email" name="email">
+            </div>
 
-        <button id="login-button">Załóż konto</button>
+            <div class="input-block">
+                <label for="password">Hasło</label>
+                <input type="password" id="password" [(ngModel)]="password" name="password">
+            </div>
+            <div class="validationError" *ngIf="!validPassword">
+                {{ errorMsgPassword }}
+            </div>
+            <div class="input-block">
+                <label for="passwordAgain">Powtórz hasło</label>
+                <input type="password" id="passwordAgain" [(ngModel)]="passwordRepeated" name="passwordAgain" minlength="4">
+            </div>
+            <div class="validationError" *ngIf="!validPassword">
+                    {{ errorMsgPasswordRepeated }}
+            </div>
+            
+            <button id="register-button">Załóż konto</button>        
+        </form>
+        
+        
+        
 
         <div id="links">
             <a href="login">Masz już konto? Zaloguj się!</a>
