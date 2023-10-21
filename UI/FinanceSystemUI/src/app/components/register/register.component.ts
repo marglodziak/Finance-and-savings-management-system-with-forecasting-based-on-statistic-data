@@ -37,11 +37,4 @@ export class RegisterComponent {
 
       return true;
     }
-
-    // private async SendData()
-    // {
-    //   var result = ;
-    //   this.test = result.type;
-    //   return result.type;
-    // }
 }

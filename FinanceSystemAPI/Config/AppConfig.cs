@@ -5,21 +5,39 @@ namespace FinanceSystemAPI.Config
 {
     public static class AppConfig
     {
-        public static string CorsPolicyName => GetConfig("AllowCorsPolicy", true);
+        public static string FinanceSystemDBConnString => GetConfig("FinanceSystemDB", true, true);
 
-        private static string GetConfig(string key, bool throwError)
+        private static string GetConfig(string key, bool throwError, bool isConnString = false)
         {
-            if (ConfigurationManager.AppSettings[key] is not null)
+            try
             {
-                return ConfigurationManager.AppSettings[key];
+                if (isConnString)
+                {
+                    return GetConnString(key);
+                }
+
+                return GetAppSetting(key);
             }
 
-            if (throwError)
+            catch
             {
-                throw new ConfigurationException($"Key \"{key}\" does not exist in the config file.");
-            }
+                if (throwError)
+                {
+                    throw;
+                }
 
-            return "";
+                return "";
+            }
+        }
+
+        private static string GetConnString(string key)
+        {
+            return ConfigurationManager.ConnectionStrings[key].ToString();
+        }
+
+        private static string GetAppSetting(string key)
+        {
+            return ConfigurationManager.AppSettings[key].ToString();
         }
     }
 }
