@@ -1,10 +1,28 @@
-<div class="container">
-    <!-- BACKGROUND IMAGE SOURCE -->
-    <!-- <a href="https://www.freepik.com/free-photo/stacks-coins-arranged-bar-graph_26926274.htm#query=finance&position=1&from_view=search&track=sph">Image by user6702303</a> on Freepik     -->
+<div class="connectUserCardContainer">
+    <div class="connectUserCard">
+        <h3>
+            Wybierz istniejącego użytkownika
+        </h3>
+        <form name="loginForm" (ngSubmit)="onSubmitExisting()">
+            <div class="input-block">
+                <label for="email">E-mail</label>
+                <input type="text" id="email" [(ngModel)]="email" name="email">
+            </div>
 
-    <div class="login-card">
-        <h3>Rejestracja</h3>
-        <form name="registerForm" (ngSubmit)="onSubmit()">
+            <div class="input-block">
+                <label for="password">Hasło</label>
+                <input type="password" id="password" [(ngModel)]="password" name="password">
+            </div>
+            
+            <button id="login-button">Zaloguj</button>        
+        </form>
+    </div>
+    <div class="separator"></div>
+    <div class="connectUserCard">
+        <h3>
+            Utwórz nowego użytkownika
+        </h3>
+        <form name="registerForm" (ngSubmit)="onSubmitNew()">
             <div class="input-block">
                 <label for="email">E-mail</label>
                 <input type="text" id="email" [(ngModel)]="email" name="email">
@@ -27,9 +45,6 @@
             
             <button id="register-button">Załóż konto</button>        
         </form>
-
-        <div id="links">
-            <a href="login">Masz już konto? Zaloguj się!</a>
-        </div>       
     </div>
 </div>
+

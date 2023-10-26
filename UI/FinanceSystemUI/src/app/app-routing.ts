@@ -1,14 +1,40 @@
 import { NgModule } from '@angular/core';
 import { CommonModule, } from '@angular/common';
-import { BrowserModule  } from '@angular/platform-browser';
 import { Routes, RouterModule } from '@angular/router';
+import { UserLayoutComponent } from './user-layout/user-layout.component';
 
-const routes: Routes = [];
+const routes: Routes = [
+  {
+    path: 'dashboard',
+    component: UserLayoutComponent,
+    //canActivate: [AuthGuard],
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('src/app/user-layout/user-layout.module').then(m => m.UserLayoutModule)
+      }
+    ]
+  },
+  {
+    path: 'authentication',
+    component: UserLayoutComponent,
+    //canActivate: [AuthGuard],
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('src/app/user-layout/user-layout.module').then(m => m.UserLayoutModule)
+      }
+    ]
+  },
+  {
+    path: "**",
+    redirectTo: "dashboard"
+  }
+];
 
 @NgModule({
   imports: [
     CommonModule,
-    BrowserModule,
     RouterModule.forRoot(routes)
   ],
   exports: [

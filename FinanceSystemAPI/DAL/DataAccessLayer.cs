@@ -10,24 +10,20 @@ namespace FinanceSystemAPI.DAL
     {
         private DataAccessLayerGeneric _dal = new();
 
-        public SqlQueryResult RegisterUser(string email, string hashedPassword)
+        public SqlQueryResult RegisterUser(string email, string hashedPassword, string salt)
         {
             return _dal.ExecuteProcedure("[dbo].[usp_User_Insert]", new SqlParameter[] {
                 new SqlParameter("@p_Email", email),
                 new SqlParameter("@p_HashedPassword", hashedPassword),
+                new SqlParameter("@p_Salt", salt)
             });
-
         }
 
-        public SqlQueryResult Test()
+        public SqlQueryResult GetUserDetails(string email)
         {
-            return _dal.ExecuteProcedure("dbo.Test", new SqlParameter[] {
-                   new SqlParameter("@p_1", "Działa może?"),
-                   new SqlParameter("@p_2", "Na pewno zadziała"),
-                   new SqlParameter("@p_3", "A jeśli nie?"),
-                   new SqlParameter("@p_4", "To zobaczymy")
+            return _dal.ExecuteProcedure("[dbo].[usp_User_Select]", new SqlParameter[] {
+                new SqlParameter("@p_Email", email)
             });
         }
-        
     }
 }

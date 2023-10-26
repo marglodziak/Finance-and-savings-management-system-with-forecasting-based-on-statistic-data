@@ -1,0 +1,10 @@
+.sidebar{
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    width: 15%;
+    height: 100vh;
+    background-color: olive;
+    padding-top: 3em;
+}

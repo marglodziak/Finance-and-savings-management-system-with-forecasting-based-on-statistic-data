@@ -1,24 +1,21 @@
-<div class="container">
+
     <!-- BACKGROUND IMAGE SOURCE -->
     <!-- <a href="https://www.freepik.com/free-photo/stacks-coins-arranged-bar-graph_26926274.htm#query=finance&position=1&from_view=search&track=sph">Image by user6702303</a> on Freepik     -->
-
     <div class="login-card">
         <h3>Logowanie</h3>
-        <div class="input-block">
+        <form name="loginForm" (ngSubmit)="onSubmit()">
             <label for="email">E-mail</label>
-            <input type="text" id="email">
-        </div>
-        
-        <div class="input-block">
-            <label for="password">Hasło</label>
-            <input type="password" id="password">
-        </div>
+            <input type="text" id="email" [(ngModel)]="email" name="email">
 
-        <button id="login-button">Zaloguj się</button>
+            <label for="password">Hasło</label>
+            <input type="password" id="password" [(ngModel)]="password" name="password">
+            
+            <button id="login-button">Zaloguj</button>        
+        </form>
 
         <div id="links">
             <a href="register">Nie masz konta? Zarejestruj się!</a>
             <a href="resetPassword">Nie pamiętasz hasła?</a>
         </div>    
     </div>
-</div>
+
