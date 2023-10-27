@@ -4,7 +4,9 @@ import { HttpService } from 'src/app/services/http.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['../../styles/authorization.css']
+  styleUrls: ['../../app.component.css',
+              '../../layouts/user-layout/user-layout.component.css',
+              './login.component.css']
 })
 export class LoginComponent {
     email: string = "bca";

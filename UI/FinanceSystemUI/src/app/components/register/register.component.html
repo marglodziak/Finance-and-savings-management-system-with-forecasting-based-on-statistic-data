@@ -1,35 +1,26 @@
-<div class="container">
-    <!-- BACKGROUND IMAGE SOURCE -->
-    <!-- <a href="https://www.freepik.com/free-photo/stacks-coins-arranged-bar-graph_26926274.htm#query=finance&position=1&from_view=search&track=sph">Image by user6702303</a> on Freepik     -->
+<div class="authentication-card">
+    <h3>Rejestracja</h3>
+    <form name="registerForm" (ngSubmit)="onSubmit()">
+        <label for="email">E-mail</label>
+        <input type="text" id="email" [(ngModel)]="email" name="email">
 
-    <div class="login-card">
-        <h3>Rejestracja</h3>
-        <form name="registerForm" (ngSubmit)="onSubmit()">
-            <div class="input-block">
-                <label for="email">E-mail</label>
-                <input type="text" id="email" [(ngModel)]="email" name="email">
-            </div>
+        <label for="password">Hasło</label>
+        <input type="password" id="password" [(ngModel)]="password" name="password">
+        <div class="validationError" *ngIf="!validPassword">
+            {{ errorMsgPassword }}
+        </div>
 
-            <div class="input-block">
-                <label for="password">Hasło</label>
-                <input type="password" id="password" [(ngModel)]="password" name="password">
-            </div>
-            <div class="validationError" *ngIf="!validPassword">
-                {{ errorMsgPassword }}
-            </div>
-            <div class="input-block">
-                <label for="passwordAgain">Powtórz hasło</label>
-                <input type="password" id="passwordAgain" [(ngModel)]="passwordRepeated" name="passwordAgain" minlength="4">
-            </div>
-            <div class="validationError" *ngIf="!validPassword">
-                    {{ errorMsgPasswordRepeated }}
-            </div>
-            
-            <button id="register-button">Załóż konto</button>        
-        </form>
+        <label for="passwordAgain">Powtórz hasło</label>
+        <input type="password" id="passwordAgain" [(ngModel)]="passwordRepeated" name="passwordAgain" minlength="4">
 
-        <div id="links">
-            <a href="login">Masz już konto? Zaloguj się!</a>
-        </div>       
-    </div>
+        <div class="validation-error" *ngIf="!validPassword">
+                {{ errorMsgPasswordRepeated }}
+        </div>
+        
+        <button class="authentication-button">Załóż konto</button>        
+    </form>
+
+    <div class="authentication-links">
+        <a [routerLink]="['../login']">Masz już konto? Zaloguj się!</a>
+    </div>       
 </div>

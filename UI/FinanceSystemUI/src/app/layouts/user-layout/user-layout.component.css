@@ -1,0 +1,96 @@
+.navbar{
+    width: 100%;
+    height: 10%;
+    background-color: rgb(144, 105, 43);
+    color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: center;
+}
+
+.navbarItem{
+    padding: 0 0.6em;
+    width: 14%;
+    text-align: center;
+}
+
+.separator{
+    width: 0.07em;
+    height: 1.3em;
+    background-color: white;
+}
+
+.current-page {
+    /* BACKGROUND IMAGE SOURCE
+    <a href="https://www.freepik.com/free-photo/stacks-coins-arranged-bar-graph_26926274.htm#query=finance&position=1&from_view=search&track=sph">Image by user6702303</a> on Freepik */
+    height: 90%;
+    position: relative;
+    background-image: url('..\..\..\assets\login\background.jpg');
+    background-position: center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Authentication form */
+.authentication-card{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 90%;
+    background-color: #ffffffee;
+    border-radius: 0.3rem;
+    border: 2px solid olive;
+    box-shadow: 0 0 0.8rem 0.2rem #444;
+    font-size: 1.2rem;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    gap: 0.5em;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4em;
+}
+
+form input {
+    width: 100%;
+    padding: 0.1rem 0.5rem;
+    box-sizing: border-box;
+    border-radius: 0.3rem;
+    border: 2px solid olive;
+    font-size: 1.2rem;
+}
+
+form label {
+    font-size: 0.75em;
+}
+
+.authentication-button {
+    color: #fafad7;
+    background-color: #808000;
+    border: 2px solid #303000;
+    border-radius: 0.3rem;
+    padding: 0.3em;
+    font-size: 1rem;
+}
+
+.authentication-button:hover {
+    background-color: #a0a000;
+    cursor: pointer;
+}
+
+.authentication-links {
+    align-self: flex-end;
+    font-size: 0.7rem;
+    display: flex;
+    flex-direction: column;
+    align-items:flex-end;
+    gap: 0.4em;
+}

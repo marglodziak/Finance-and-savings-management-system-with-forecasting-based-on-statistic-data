@@ -4,7 +4,9 @@ import { HttpService } from 'src/app/services/http.service';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['../../styles/authorization.css', './register.component.css']
+  styleUrls: ['../../app.component.css',
+              '../../layouts/user-layout/user-layout.component.css',
+              './register.component.css']
 })
 export class RegisterComponent {
     email: string = "bca";
