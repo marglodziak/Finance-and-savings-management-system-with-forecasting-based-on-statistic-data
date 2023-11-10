@@ -1,0 +1,50 @@
+<div class="container">
+    <div class="content">
+        <div class="earnings-inputs">
+            <label>Dodaj wpływy</label>
+            <div class="input-item">
+                <h4>Data</h4>
+                <h4>Kategoria</h4>
+                <h4>Wartość</h4>
+            </div>
+            <div class="input-item" *ngFor="let earning of earningsInput; index as i; trackBy: trackByFn">
+                <input type="date"
+                    [(ngModel)]="earningsInput[i].date"
+                    (ngModelChange)="onChange($event)"
+                    name="dates{{i}}">
+                <input matInput [matDatepicker]="myDatepicker">
+                <mat-datepicker #myDatepicker></mat-datepicker>
+                    
+    
+                <select id="" placeholder="Wybierz kategorię" [(ngModel)]='earningsInput[i].category' (ngModelChange)="onChange($event)">
+                    <option
+                        *ngFor="let category of categories; let i = index"                        
+                        value="{{category}}"
+                        [attr.selected]='i==0 ? "true" : null'>
+                        {{category}}
+                    </option>
+                </select>
+                    
+    
+                <input type="text"
+                        [(ngModel)]="earningsInput[i].value"
+                        (ngModelChange)="onChange($event)"
+                        name="values{{i}}">
+            </div>  
+            <div class="submit-buttons">
+                <button class="earnings-button" [disabled]="addRowDisabled" (click)="addRow()">Dodaj wiersz</button>              
+                <button class="earnings-button" (click)="submitInput()">Zapisz wpływy</button>    
+            </div>
+                      
+        </div>       
+
+        <h3>Historia wpływów</h3>
+        <div class="earnings-list">
+            <div class="earnings-list-item" *ngFor="let item of earnings">
+                <p>{{item.date}}</p>
+                <p>{{item.category}}</p>
+                <p>{{item.value}}</p>
+            </div>
+        </div>
+    </div>
+</div>

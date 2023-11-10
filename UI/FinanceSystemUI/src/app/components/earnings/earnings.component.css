@@ -1,0 +1,64 @@
+.container {
+    /* BACKGROUND IMAGE SOURCE
+    <a href="https://www.freepik.com/free-photo/stacks-coins-arranged-bar-graph_26926274.htm#query=finance&position=1&from_view=search&track=sph">Image by user6702303</a> on Freepik */
+    position:fixed;
+    top: 0;
+    left: 0;
+    overflow-y: scroll;
+    background-image: url('..\..\..\assets\login\background.jpg');
+    background-position: center;
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.content {
+    position: absolute;
+    top: 0;
+    padding: 5%;
+    box-sizing: border-box;
+    width: 80%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    background-color: white;
+}
+
+h4 {
+    margin: 0.3em;
+}
+
+.earnings-inputs {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.input-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.earnings-button {
+    padding: 0.3em;
+    margin: 0.3em;
+}
+
+.earnings-list {
+    width: 60%;
+}
+
+.earnings-list-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

@@ -2,21 +2,22 @@ import { NgModule } from '@angular/core';
 import { CommonModule, } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 import { UserLayoutComponent } from './layouts/user-layout/user-layout.component';
+import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 
 const routes: Routes = [
   {
-    path: 'dashboard',
-    component: UserLayoutComponent,
+    path: 'authentication',
+    component: AuthLayoutComponent,
     //canActivate: [AuthGuard],
     children: [
       {
         path: '',
-        loadChildren: () => import('./layouts/user-layout/user-layout.module').then(m => m.UserLayoutModule)
+        loadChildren: () => import('./layouts/auth-layout/auth-layout.module').then(m => m.AuthLayoutModule)
       }
     ]
   },
   {
-    path: 'authentication',
+    path: 'dashboard',
     component: UserLayoutComponent,
     //canActivate: [AuthGuard],
     children: [

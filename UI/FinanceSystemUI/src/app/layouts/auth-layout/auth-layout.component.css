@@ -1,0 +1,12 @@
+.container {
+    /* BACKGROUND IMAGE SOURCE
+    <a href="https://www.freepik.com/free-photo/stacks-coins-arranged-bar-graph_26926274.htm#query=finance&position=1&from_view=search&track=sph">Image by user6702303</a> on Freepik */
+    height: 100%;
+    position: relative;
+    background-image: url('..\..\..\assets\login\background.jpg');
+    background-position: center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

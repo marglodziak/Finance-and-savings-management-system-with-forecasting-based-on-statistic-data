@@ -7,11 +7,11 @@ import { HttpClient, HttpHeaders, HttpParamsOptions } from '@angular/common/http
 })
 export class HttpService {
 
-
-  private registrationUrl: string = "https://localhost:7112/Authorization/Register/";
-  private loginUrl: string = "https://localhost:7112/Authorization/Login/";
-  private testUrl: string = "https://www.boredapi.com/api/activity";
-  private options = { headers: new HttpHeaders({"ContentType": "application/json"}) };
+  private baseUrl: string = "https://localhost:7112/";
+  private registrationUrl: string = this.baseUrl + "Authorization/Register/";
+  private loginUrl: string = this.baseUrl + "Authorization/Login/";
+  private earningsUrl: string = this.baseUrl + "Finances/Earnings/";
+  private options = { headers: new HttpHeaders({"Content-Type": "application/json"}) };
 
   constructor(private http:HttpClient){ }
 
@@ -23,5 +23,10 @@ export class HttpService {
   logIn(email: string, password: string)
   {
     return this.http.post(this.loginUrl, { "Email": email, "Password": password}, this.options);
+  }
+
+  addEarning(body: string)
+  {
+    return this.http.post(this.earningsUrl, body, this.options);
   }
 }
