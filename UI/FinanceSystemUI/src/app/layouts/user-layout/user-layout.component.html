@@ -1,24 +1,24 @@
 
 <div class="navbar">
-    <div class="navbarItem">
-        <a [routerLink]="['earnings']">Wpływy</a>
+    <a [routerLink]="'.'">
+        <img src="..\..\assets\user-layout\logo.png" class="navbar-photo"/>
+    </a>
+    
+    <div class="navbarItemsList">
+        <a *ngFor="let route of routes" [routerLink]=route.routerLink>
+            <div class="navbarItem">
+                <img src={{route.imagePath}} class="navbar-photo"/>
+                {{route.name}}
+            </div>
+        </a>
     </div>
-    <div class="separator"></div>
 
-    <div class="navbarItem">
-        <a [routerLink]="['savings']">Oszczędności</a>
-    </div>
-    <div class="separator"></div>
-
-    <div class="navbarItem">
-        <a [routerLink]="['expenses']">Wydatki</a>
-    </div>
-    <div class="separator"></div>
-
-    <div class="navbarItem">
-        <a [routerLink]="['connectUser']">Połącz użytkownika</a>
-    </div>
-    <div class="separator"></div>
+    <a [routerLink]="['../authentication']">
+        <div class="navbarItem">
+            <img src="..\..\assets\user-layout\logout.png" class="navbar-photo"/>
+            <span (click)="LogOut()">Wyloguj</span>
+        </div>
+    </a>
 </div>
 <div class="current-page">
     <router-outlet></router-outlet>

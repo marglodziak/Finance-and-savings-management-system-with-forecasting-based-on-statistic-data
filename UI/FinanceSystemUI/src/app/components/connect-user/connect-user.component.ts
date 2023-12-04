@@ -4,7 +4,7 @@ import { HttpService } from 'src/app/services/http.service';
 @Component({
   selector: 'app-connect-user',
   templateUrl: './connect-user.component.html',
-  styleUrls: ['../../styles/authorization.css', './connect-user.component.css']
+  styleUrls: ['./connect-user.component.css']
 })
 export class ConnectUserComponent {
   email: string = "bca";

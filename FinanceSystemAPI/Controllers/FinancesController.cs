@@ -1,38 +1,64 @@
-﻿using FinanceSystemAPI.DAL;
+﻿using FinanceSystemAPI.Config;
+using FinanceSystemAPI.DAL;
 using FinanceSystemAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json.Serialization;
 
 namespace FinanceSystemAPI.Controllers
 {
     [ApiController]
+    [Authorize]
     [EnableCors("AllowCorsPolicy")]
     [Route("[controller]")]
     public class FinancesController : Controller
     {
         [Route("Earnings")]
-        [HttpPost]
-        public IActionResult AddEarnings([FromBody] EarningRequest request)
+        [HttpGet]
+        public IActionResult GetEarnings()
         {
-            var result = new DataAccessLayer().AddEarnings(request);
-            var samples = new Earning[]
-            {
-                new Earning()
-                {
-                    Date = "2023-11-05",
-                    Category = "Pensja",
-                    Value = 1234.56
-                },
-                new Earning()
-                {
-                    Date = "2023-11-06",
-                    Category = "Pensja",
-                    Value = 321.12
-                }
-            };
+            var dal = new DataAccessLayer();
 
-            return result.IsSuccessful ? Ok(samples) : BadRequest($"Nie udało się dodać następujących wpływów: {result.ErrorMessage}");
+            var userId = GetUserId(dal);
+            var result = dal.GetUserEarnings(userId);
+
+            return Ok(result);
+
+            //return result.IsSuccessful ? Ok(samples) : BadRequest($"Nie udało się dodać następujących wpływów: {result.ErrorMessage}");
+        }
+
+        [Route("EarningCategories")]
+        [HttpGet]
+        public IActionResult GetEarningCategories()
+        {
+            var dal = new DataAccessLayer();
+
+            var userId = GetUserId(dal);
+            var result = dal.GetEarningCategories(userId);
+
+            return Ok(result);
+
+            //return result.IsSuccessful ? Ok(samples) : BadRequest($"Nie udało się dodać następujących wpływów: {result.ErrorMessage}");
+        }
+
+        [Route("Earnings")]
+        [HttpPost]
+        public IActionResult AddEarnings([FromBody] Earning[] earnings)
+        {
+            var dal = new DataAccessLayer();
+            var userId = GetUserId(dal);
+
+            dal.AddEarnings(userId, earnings);
+
+            return Ok();
+        }
+
+        private int GetUserId(DataAccessLayer dal)
+        {
+            var user = HttpContext.User;
+            var userEmail = user.Claims.FirstOrDefault(c => c.Type == AppConfig.UsernameClaim)?.Value ?? "";
+
+            return dal.GetUserId(userEmail);
         }
     }
 }

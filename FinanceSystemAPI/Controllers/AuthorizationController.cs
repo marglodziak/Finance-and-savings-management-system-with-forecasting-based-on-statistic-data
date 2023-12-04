@@ -6,10 +6,14 @@ using FinanceSystemAPI.DAL;
 using FinanceSystemAPI.Config;
 using FinanceSystemAPI.Helpers;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using JWT.Builder;
+using JWT.Algorithms;
 
 namespace FinanceSystemAPI.Controllers
 {
     [ApiController]
+    [Authorize]
     [EnableCors("AllowCorsPolicy")]
     [Route("[controller]")]
     public class AuthorizationController : ControllerBase
@@ -31,6 +35,7 @@ namespace FinanceSystemAPI.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route("Login")]
         public IActionResult LoginUser(Credentials credentials)
         {
@@ -55,7 +60,37 @@ namespace FinanceSystemAPI.Controllers
                 return BadRequest("B³êdne dane logowania");
             }
 
-            return Ok($"U¿ytkownik zalogowany z uprawnieniami {result.ReturnedData.Rows[0]["Role_Id"]}");
+            var token = GenerateJwtToken(credentials.Email, (int)result.ReturnedData.Rows[0]["Role_Id"]);
+            return Ok(new { Token = token });
+        }
+
+        [HttpGet]
+        [Route("test")]
+        public IActionResult Test()
+        {
+            var user = HttpContext.User;
+            
+            if (user.HasClaim(c => c.Type == AppConfig.UsernameClaim))
+            {
+                string username = user.FindFirst(c => c.Type == AppConfig.UsernameClaim).Value;
+            }
+            if (user.HasClaim(c => c.Type == AppConfig.RoleClaim))
+            {
+                int role = Convert.ToInt32(user.FindFirst(c => c.Type == AppConfig.RoleClaim).Value);
+            }
+            return Ok("123");
+        }
+        
+        private string GenerateJwtToken(string email, int role)
+        {
+            return new JwtBuilder()
+                .WithAlgorithm(new HMACSHA256Algorithm())
+                .WithSecret(Encoding.ASCII.GetBytes(AppConfig.FinanceSystemSigningKey))
+                .Issuer(AppConfig.FinanceSystemIssuer)
+                .AddClaim(AppConfig.ExpirationClaim, DateTimeOffset.UtcNow.AddMinutes(AppConfig.ExpirationTime).ToUnixTimeSeconds())
+                .AddClaim(AppConfig.UsernameClaim, email)
+                .AddClaim(AppConfig.RoleClaim, role)
+                .Encode();
         }
     }
 }

@@ -10,8 +10,6 @@ import { EarningsComponent } from 'src/app/components/earnings/earnings.componen
 import { SavingsComponent } from 'src/app/components/savings/savings.component';
 import { ExpensesComponent } from 'src/app/components/expenses/expenses.component';
 import { HistoryComponent } from 'src/app/components/history/history.component';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -25,8 +23,6 @@ import { MatNativeDateModule } from '@angular/material/core';
   imports: [
     CommonModule,
     FormsModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
     RouterModule.forChild(UserLayoutRoutes)
   ]
 })

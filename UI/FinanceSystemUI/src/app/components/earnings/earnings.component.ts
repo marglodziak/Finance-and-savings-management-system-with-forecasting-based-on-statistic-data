@@ -1,34 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpService } from 'src/app/services/http.service';
-import { EarningsInput } from '../models/earningsInput';
-import { EarningsHistory } from '../models/earningsHistory';
-import { AddEarning } from '../requests/addEarning';
+import { Earning } from '../models/earning';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-earnings',
   templateUrl: './earnings.component.html',
   styleUrls: ['./earnings.component.css']
 })
-export class EarningsComponent {
-  categories: string[] = [
-    "Pensja",
-    "Oszczędności",
-    "Odsetki",
-    "Prezent",
-    "Darowizna"
-  ];
-  earningsInput: EarningsInput[] = [new EarningsInput(new Date(), this.categories[2])];
-  earnings: EarningsHistory[] = [
-    new EarningsHistory(new Date(), "testCat", "1234.15"),
-    // new EarningsHistory(new Date("2023-05-20"), "testCat2", "1234.15"),
-    // new EarningsHistory(new Date("2023-06-1"), "testCat3", "1234.15"),
-    // new EarningsHistory(new Date(), "testCat4", "1234.15"),
-  ];
+export class EarningsComponent implements OnInit{
+  categories: string[] = [];
+  earningsInput: Earning[] = [this.CreateInputRow()];
+  earnings: Earning[] = [];
   
   chosenCategory = this.categories[0];
   addRowDisabled: boolean = true;
 
-  constructor(private httpService:HttpService) { }
+  constructor(private httpService:HttpService, private datePipe: DatePipe) { }
+
+  ngOnInit(): void {
+    this.httpService.getEarnings().subscribe(response => this.earnings = response);
+    this.httpService.getEarningCategories().subscribe(response => this.categories = response);
+  }
 
   trackByFn(index: any) {
     return index;  
@@ -40,7 +33,7 @@ export class EarningsComponent {
     let currentEarning = this.earningsInput.at(-1);
     //currentEarning!.date = new Date(value);
     //alert(currentEarning?.date);
-    if (currentEarning?.value != "" && currentEarning?.category != "")
+    if (currentEarning?.value != 0 && currentEarning?.category != "")
     {
       this.addRowDisabled = false;
     }    
@@ -48,20 +41,30 @@ export class EarningsComponent {
 
   addRow()
   {
-    this.earningsInput.push(new EarningsInput(new Date(), this.categories[2]));
+    this.earningsInput.push(this.CreateInputRow());
     this.addRowDisabled = true;
   }
 
   submitInput()
   {
-    let request = new AddEarning(1);
+    let test = this.httpService.addEarning(JSON.stringify(this.earningsInput)).subscribe();
+    this.earnings = this.earnings.concat(this.earningsInput);
+    this.ResetInput();
+    this.sortEarnings();
+  }
 
-    this.earningsInput.forEach(earning => {
-        alert(earning.date);
-        // request.earnings.push(new EarningsHistory(earning.date, earning.category, earning.value))
-    });
-    //alert(JSON.stringify(confirmedEarnings));
-    //let test = this.httpService.addEarning(JSON.stringify(request)).subscribe();
-    this.earningsInput = [new EarningsInput()];
+  private ResetInput()
+  {
+    this.earningsInput = [this.CreateInputRow()];
+  }
+
+  private sortEarnings()
+  {
+    //  this.earnings = this.earnings.sort((a, b) => a.date - b.date)
+  }
+
+  private CreateInputRow()
+  {
+    return new Earning(this.datePipe.transform(new Date(), "yyyy-MM-dd")!, this.categories[2], "0.00")
   }
 }

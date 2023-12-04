@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParamsOptions } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Token } from '../components/models/token';
+import { Earning } from '../components/models/earning';
+import { AuthService } from './auth.service';
+import { Observable } from 'rxjs';
 
 
 @Injectable({
@@ -11,9 +15,10 @@ export class HttpService {
   private registrationUrl: string = this.baseUrl + "Authorization/Register/";
   private loginUrl: string = this.baseUrl + "Authorization/Login/";
   private earningsUrl: string = this.baseUrl + "Finances/Earnings/";
-  private options = { headers: new HttpHeaders({"Content-Type": "application/json"}) };
+  private earningCategoriesUrl: string = this.baseUrl + "Finances/EarningCategories/";
+  private options = { 'headers': new HttpHeaders({"Content-Type": "application/json"}) };
 
-  constructor(private http:HttpClient){ }
+  constructor(private http:HttpClient, private authService: AuthService){ }
 
   registerNewUser(email: string, password: string)
   {
@@ -22,7 +27,31 @@ export class HttpService {
 
   logIn(email: string, password: string)
   {
-    return this.http.post(this.loginUrl, { "Email": email, "Password": password}, this.options);
+    return this.http.post<Token>(this.loginUrl, { "Email": email, "Password": password}, this.options);
+  }
+
+  getEarnings() : Observable<Earning[]>
+  {
+    if (this.authService.isUserLoggedIn())
+    {
+      this.options.headers = this.options.headers.set('Authorization', "Bearer " + window.sessionStorage.getItem("accessToken"));
+
+      return this.http.get<Earning[]>(this.earningsUrl, this.options);
+    }
+
+    return new Observable<Earning[]>;    
+  }
+
+  getEarningCategories() : Observable<string[]>
+  {
+    if (this.authService.isUserLoggedIn())
+    {
+      this.options.headers = this.options.headers.set('Authorization', "Bearer " + window.sessionStorage.getItem("accessToken"));
+
+      return this.http.get<string[]>(this.earningCategoriesUrl, this.options);
+    }
+
+    return new Observable<string[]>;    
   }
 
   addEarning(body: string)

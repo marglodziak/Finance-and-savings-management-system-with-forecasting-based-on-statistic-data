@@ -9,6 +9,9 @@ import { AppRoutingModule } from './app-routing';
 import { RouterModule } from '@angular/router';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 
+import '@angular/common/locales/global/pl';
+import { DatePipe } from '@angular/common';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -22,7 +25,7 @@ import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component
     FormsModule,
     HttpClientModule,
   ],
-  providers: [],
+  providers: [DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -11,10 +11,7 @@
                 <input type="date"
                     [(ngModel)]="earningsInput[i].date"
                     (ngModelChange)="onChange($event)"
-                    name="dates{{i}}">
-                <input matInput [matDatepicker]="myDatepicker">
-                <mat-datepicker #myDatepicker></mat-datepicker>
-                    
+                    name="dates{{i}}">                    
     
                 <select id="" placeholder="Wybierz kategorię" [(ngModel)]='earningsInput[i].category' (ngModelChange)="onChange($event)">
                     <option
@@ -41,7 +38,7 @@
         <h3>Historia wpływów</h3>
         <div class="earnings-list">
             <div class="earnings-list-item" *ngFor="let item of earnings">
-                <p>{{item.date}}</p>
+                <p>{{item.date | date : undefined : undefined : "pl-PL"}}</p>
                 <p>{{item.category}}</p>
                 <p>{{item.value}}</p>
             </div>

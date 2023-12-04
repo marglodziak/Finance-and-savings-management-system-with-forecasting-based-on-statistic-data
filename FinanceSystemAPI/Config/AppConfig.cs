@@ -6,6 +6,12 @@ namespace FinanceSystemAPI.Config
     public static class AppConfig
     {
         public static string FinanceSystemDBConnString => GetConfig("FinanceSystemDB", true, true);
+        public static string FinanceSystemIssuer => GetConfig("Issuer", true, false);
+        public static string FinanceSystemSigningKey => GetConfig("SigningKey", true, false);
+        public static int ExpirationTime => Convert.ToInt32(GetConfig("ExpirationTime", true, false));
+        public static string ExpirationClaim => GetConfig("ExpirationClaim", true, false);
+        public static string UsernameClaim => GetConfig("UsernameClaim", true, false);
+        public static string RoleClaim => GetConfig("RoleClaim", true, false);
 
         private static string GetConfig(string key, bool throwError, bool isConnString = false)
         {

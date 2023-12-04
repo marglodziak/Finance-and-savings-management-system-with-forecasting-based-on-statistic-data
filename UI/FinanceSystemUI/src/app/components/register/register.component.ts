@@ -5,7 +5,7 @@ import { HttpService } from 'src/app/services/http.service';
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['../../app.component.css',
-              '../../layouts/user-layout/user-layout.component.css',
+              '../../layouts/auth-layout/auth-layout.component.css',
               './register.component.css']
 })
 export class RegisterComponent {

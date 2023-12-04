@@ -1,14 +1,28 @@
-import { NgModule } from '@angular/core';
+import { NgModule, inject } from '@angular/core';
 import { CommonModule, } from '@angular/common';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { UserLayoutComponent } from './layouts/user-layout/user-layout.component';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
+import { authenticationGuard } from './authGuards/loginGuard';
+import { AuthService } from './services/auth.service';
 
 const routes: Routes = [
   {
     path: 'authentication',
     component: AuthLayoutComponent,
-    //canActivate: [AuthGuard],
+    // canActivate: [(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
+    //   {
+    //     const authService = inject(AuthService);
+    //     const router = inject(Router);
+        
+    //     if (authService.isUserLoggedIn())
+    //     {
+    //       window.location.reload();
+    //     }
+
+    //     return !authService.isUserLoggedIn();
+    //   }
+    // ], 
     children: [
       {
         path: '',
@@ -19,7 +33,19 @@ const routes: Routes = [
   {
     path: 'dashboard',
     component: UserLayoutComponent,
-    //canActivate: [AuthGuard],
+    // canActivate: [(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
+    //   {
+    //     const authService = inject(AuthService);
+    //     const router = inject(Router);
+
+    //     if (!authService.isUserLoggedIn())
+    //     {
+    //       router.navigate(['authentication']);
+    //     }
+        
+    //     return authService.isUserLoggedIn();
+    //   }      
+    // ],
     children: [
       {
         path: '',

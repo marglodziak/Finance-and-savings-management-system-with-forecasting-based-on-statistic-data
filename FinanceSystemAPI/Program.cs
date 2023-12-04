@@ -1,3 +1,8 @@
+using FinanceSystemAPI.Config;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 namespace FinanceSystemAPI
 {
     public class Program
@@ -20,6 +25,21 @@ namespace FinanceSystemAPI
                                       .AllowAnyMethod();
                                   });
             });
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = AppConfig.FinanceSystemIssuer,
+                        ValidAudience = AppConfig.FinanceSystemIssuer,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.FinanceSystemSigningKey))
+                    };
+                });
 
             var app = builder.Build();
 
