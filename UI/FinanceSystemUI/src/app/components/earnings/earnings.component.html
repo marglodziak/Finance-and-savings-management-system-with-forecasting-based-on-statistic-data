@@ -1,42 +1,22 @@
 <div class="container">
     <div class="content">
-        <div class="earnings-inputs">
-            <label>Dodaj wpływy</label>
-            <div class="input-item">
-                <h4>Data</h4>
-                <h4>Kategoria</h4>
-                <h4>Wartość</h4>
-            </div>
-            <div class="input-item" *ngFor="let earning of earningsInput; index as i; trackBy: trackByFn">
-                <input type="date"
-                    [(ngModel)]="earningsInput[i].date"
-                    (ngModelChange)="onChange($event)"
-                    name="dates{{i}}">                    
-    
-                <select id="" placeholder="Wybierz kategorię" [(ngModel)]='earningsInput[i].category' (ngModelChange)="onChange($event)">
-                    <option
-                        *ngFor="let category of categories; let i = index"                        
-                        value="{{category}}"
-                        [attr.selected]='i==0 ? "true" : null'>
-                        {{category}}
-                    </option>
-                </select>
-                    
-    
-                <input type="text"
-                        [(ngModel)]="earningsInput[i].value"
-                        (ngModelChange)="onChange($event)"
-                        name="values{{i}}">
-            </div>  
-            <div class="submit-buttons">
-                <button class="earnings-button" [disabled]="addRowDisabled" (click)="addRow()">Dodaj wiersz</button>              
-                <button class="earnings-button" (click)="submitInput()">Zapisz wpływy</button>    
-            </div>
-                      
-        </div>       
+        <h3>Ostatnie wpływy</h3>
+        <button (click)="openModal()">+<br/>Dodaj wpływy</button>
+        <div class="filters">
+            <select name="" id="">
 
-        <h3>Historia wpływów</h3>
+            </select>
+            <button (click)="filterEarnings()">Filtruj</button>
+        </div>
+        
         <div class="earnings-list">
+            <div class="earnings-list-item">
+                <h3 *ngFor="let header of listHeaders" (click)="changeSortColumn(header)">
+                    {{header.name}}
+                    <span *ngIf="header.arrowDirection == -1">&darr;</span>
+                    <span *ngIf="header.arrowDirection == 1">&uarr;</span>
+                </h3>
+            </div>
             <div class="earnings-list-item" *ngFor="let item of earnings">
                 <p>{{item.date | date : undefined : undefined : "pl-PL"}}</p>
                 <p>{{item.category}}</p>
@@ -45,3 +25,38 @@
         </div>
     </div>
 </div>
+
+<div class="modal-background" *ngIf="!modalDisabled" (click)="closeModal()"></div>
+<div class="earnings-inputs-modal" *ngIf="!modalDisabled">
+    <div class="close-modal" (click)="closeModal()">X</div>
+    <div class="input-item">
+        <h4>Data</h4>
+        <h4>Kategoria</h4>
+        <h4>Wartość</h4>
+    </div>
+    <div class="input-item" *ngFor="let earning of earningsInput; index as i; trackBy: trackByFn">
+        <input type="date"
+            [(ngModel)]="earningsInput[i].date"
+            (ngModelChange)="onChange($event)"
+            name="dates{{i}}">                    
+
+        <select id="" placeholder="Wybierz kategorię" [(ngModel)]='earningsInput[i].category' (ngModelChange)="onChange($event)">
+            <option
+                *ngFor="let category of categories; let i = index"                        
+                value="{{category}}">
+                {{category}}
+            </option>
+        </select>
+            
+
+        <input type="text"
+                [(ngModel)]="earningsInput[i].value"
+                (ngModelChange)="onChange($event)"
+                name="values{{i}}">
+    </div>  
+    <div class="submit-buttons">
+        <button class="earnings-button" [disabled]="addRowDisabled" (click)="addRow()">Dodaj wiersz</button>              
+        <button class="earnings-button" (click)="submitInput()">Zapisz wpływy</button>    
+    </div>
+              
+</div> 

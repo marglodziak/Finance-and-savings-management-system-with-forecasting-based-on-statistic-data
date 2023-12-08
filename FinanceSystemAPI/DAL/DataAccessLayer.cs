@@ -1,7 +1,7 @@
 ﻿using FinanceSystemAPI.Models;
 using Microsoft.Data.SqlClient;
+using Newtonsoft.Json;
 using System.Data;
-using System.Reflection;
 
 namespace FinanceSystemAPI.DAL
 {
@@ -115,36 +115,36 @@ namespace FinanceSystemAPI.DAL
             return ConvertDataTable<string>(result.ReturnedData);
         }
 
-        private static List<T> ConvertDataTable<T>(DataTable dt)
+        private static IEnumerable<T> ConvertDataTable<T>(DataTable dt)
         {
-            List<T> data = new List<T>();
+            return dt.Columns.Count == 1 ? ConvertSimpleData<T>(dt) : ConvertComplexData<T>(dt);
+        }
+
+        private static IEnumerable<T> ConvertSimpleData<T>(DataTable dt)
+        {
+            var data = new List<T>();
+
             foreach (DataRow row in dt.Rows)
             {
-                T item = GetItem<T>(row);
-                data.Add(item);
+                data.Add(GetItems<T>(row));
             }
+
             return data;
         }
 
-        private static T GetItem<T>(DataRow dr)
+        private static T GetItems<T>(DataRow dr)
         {
-            Type temp = typeof(T);
-            T obj = Activator.CreateInstance<T>();
+            string drSerialized = JsonConvert.SerializeObject(dr.ItemArray[0]);
+            var drDeserialized = JsonConvert.DeserializeObject<T>(drSerialized);
 
-            foreach (DataColumn column in dr.Table.Columns)
-            {
-                foreach (PropertyInfo pro in temp.GetProperties())
-                {
-                    if (pro.Name == column.ColumnName)
-                    {
-                        var k = Convert.ChangeType(dr[column.ColumnName], pro.PropertyType);
-                        pro.SetValue(obj, k, null);
-                    }
-                    else
-                        continue;
-                }
-            }
-            return obj;
+            return drDeserialized;
+        }
+
+        private static IEnumerable<T> ConvertComplexData<T>(DataTable dt)
+        {
+            string drSerialized = JsonConvert.SerializeObject(dt);
+
+            return JsonConvert.DeserializeObject<T[]>(drSerialized);
         }
     }
 }

@@ -1,8 +1,14 @@
-.navbar{
-    width: 8%;
+::ng-deep :root {
+    --navbar-width: 8vw;
+    --bg-color: #3b3b3b;
+    --font-color: #8a8a8a;
+}
+
+.navbar {
+    width: var(--navbar-width);
     height: 105%;
-    background-color: #3b3b3b;
-    color: #8a8a8a;
+    background-color:var(--bg-color);
+    color: var(--font-color);
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -26,9 +32,9 @@
     text-align: center;
 }
 
-.navbar a:hover {
-    scale: 1.2;
+.navbar a:focus {
     color: #f6fffa;
+    scale: 1.2;
 }
 
 .navbarItem{
@@ -38,6 +44,11 @@
     align-items: center;
 }
 
+.navbarItem:hover {
+    scale: 1.2;
+    /* color: #f6fffa; */
+}
+
 .navbar-photo {
     width: 40%;
 }
@@ -45,15 +56,13 @@
 .current-page {
     position: absolute;
     top: 0;
-    left: 0;
-    height: 90%;
-    width: 100vw;
+    left: var(--navbar-width);
     display: flex;
     justify-content: center;
     align-items: center;
     background-image: url('..\..\..\assets\user-layout\background.jpg');
     background-position: center;
     background-size: cover;
-    width: 100%;
+    width: calc(100vw - var(--navbar-width));
     height: 100%;
 }

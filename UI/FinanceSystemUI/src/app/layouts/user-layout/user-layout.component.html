@@ -14,9 +14,9 @@
     </div>
 
     <a [routerLink]="['../authentication']">
-        <div class="navbarItem">
+        <div class="navbarItem" (click)="LogOut()">
             <img src="..\..\assets\user-layout\logout.png" class="navbar-photo"/>
-            <span (click)="LogOut()">Wyloguj</span>
+            <span>Wyloguj</span>
         </div>
     </a>
 </div>

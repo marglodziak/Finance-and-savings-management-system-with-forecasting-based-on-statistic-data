@@ -23,8 +23,6 @@ namespace FinanceSystemAPI.Controllers
             var result = dal.GetUserEarnings(userId);
 
             return Ok(result);
-
-            //return result.IsSuccessful ? Ok(samples) : BadRequest($"Nie udało się dodać następujących wpływów: {result.ErrorMessage}");
         }
 
         [Route("EarningCategories")]
@@ -37,8 +35,6 @@ namespace FinanceSystemAPI.Controllers
             var result = dal.GetEarningCategories(userId);
 
             return Ok(result);
-
-            //return result.IsSuccessful ? Ok(samples) : BadRequest($"Nie udało się dodać następujących wpływów: {result.ErrorMessage}");
         }
 
         [Route("Earnings")]

@@ -10,19 +10,19 @@ const routes: Routes = [
   {
     path: 'authentication',
     component: AuthLayoutComponent,
-    // canActivate: [(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
-    //   {
-    //     const authService = inject(AuthService);
-    //     const router = inject(Router);
+    canActivate: [(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
+      {
+        const authService = inject(AuthService);
+        const router = inject(Router);
         
-    //     if (authService.isUserLoggedIn())
-    //     {
-    //       window.location.reload();
-    //     }
+        if (authService.isUserLoggedIn())
+        {
+          window.location.reload();
+        }
 
-    //     return !authService.isUserLoggedIn();
-    //   }
-    // ], 
+        return !authService.isUserLoggedIn();
+      }
+    ], 
     children: [
       {
         path: '',
@@ -33,19 +33,19 @@ const routes: Routes = [
   {
     path: 'dashboard',
     component: UserLayoutComponent,
-    // canActivate: [(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
-    //   {
-    //     const authService = inject(AuthService);
-    //     const router = inject(Router);
+    canActivate: [(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
+      {
+        const authService = inject(AuthService);
+        const router = inject(Router);
 
-    //     if (!authService.isUserLoggedIn())
-    //     {
-    //       router.navigate(['authentication']);
-    //     }
+        if (!authService.isUserLoggedIn())
+        {
+          router.navigate(['authentication']);
+        }
         
-    //     return authService.isUserLoggedIn();
-    //   }      
-    // ],
+        return authService.isUserLoggedIn();
+      }      
+    ],
     children: [
       {
         path: '',
