@@ -1,5 +1,4 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
-import { UserLayoutRoutes } from './user-layout.routing';
 import { NavbarItem } from 'src/app/components/models/navbarItem';
 import { Router } from '@angular/router';
 

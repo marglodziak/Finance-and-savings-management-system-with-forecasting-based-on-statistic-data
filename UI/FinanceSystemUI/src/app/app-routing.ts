@@ -3,8 +3,7 @@ import { CommonModule, } from '@angular/common';
 import { Routes, RouterModule, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { UserLayoutComponent } from './layouts/user-layout/user-layout.component';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
-import { authenticationGuard } from './authGuards/loginGuard';
-import { AuthService } from './services/auth.service';
+import { AuthService } from './services/AuthService/auth.service';
 
 const routes: Routes = [
   {

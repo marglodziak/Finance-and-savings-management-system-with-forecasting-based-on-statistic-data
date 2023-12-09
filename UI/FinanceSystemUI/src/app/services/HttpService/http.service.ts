@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Token } from '../components/models/token';
-import { Earning } from '../components/models/earning';
-import { AuthService } from './auth.service';
+import { Token } from '../../components/models/token';
+import { Earning } from '../../components/models/earning';
+import { AuthService } from '../AuthService/auth.service';
 import { Observable } from 'rxjs';
 
 

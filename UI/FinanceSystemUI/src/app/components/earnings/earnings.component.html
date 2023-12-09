@@ -1,29 +1,61 @@
 <div class="container">
     <div class="content">
-        <h3>Ostatnie wpływy</h3>
-        <button (click)="openModal()">+<br/>Dodaj wpływy</button>
-        <div class="filters">
-            <select name="" id="">
-
-            </select>
-            <button (click)="filterEarnings()">Filtruj</button>
-        </div>
-        
-        <div class="earnings-list">
-            <div class="earnings-list-item">
-                <h3 *ngFor="let header of listHeaders" (click)="changeSortColumn(header)">
-                    {{header.name}}
-                    <span *ngIf="header.arrowDirection == -1">&darr;</span>
-                    <span *ngIf="header.arrowDirection == 1">&uarr;</span>
-                </h3>
+        <div class="content-left">
+            <h3>Ostatnie wpływy</h3>
+            <button (click)="openModal()">+<br/>Dodaj wpływy</button>
+            <div class="filters">
+                <input type="date"
+                    [(ngModel)]="filters.startDate"
+                    name=""
+                    [max]="filters.endDate">
+                <input type="date"
+                    [(ngModel)]="filters.endDate"
+                    name=""
+                    [min]="filters.startDate"> 
+                <select name="" id="" [(ngModel)]="filters.category">
+                    <option value="test">Test</option>
+                    <option selected value="">Dowolna</option>
+                    <option *ngFor="let category of categories" value="{{category}}">{{category}}</option>
+                </select>
+                <input type="number"
+                    [(ngModel)]="filters.minValue"
+                    name=""
+                    min="0"
+                    [max]="filters.maxValue"> 
+                <input type="number"
+                    [(ngModel)]="filters.maxValue"
+                    name=""
+                    [min]="filters.minValue"> 
+    
+                <input type="number"
+                    [(ngModel)]="filters.numberOfItems"
+                    name=""> 
+    
+                <button (click)="filterEarnings()">Filtruj</button>
             </div>
-            <div class="earnings-list-item" *ngFor="let item of earnings">
-                <p>{{item.date | date : undefined : undefined : "pl-PL"}}</p>
-                <p>{{item.category}}</p>
-                <p>{{item.value}}</p>
+    
+            <div class="earnings-list">
+                <div class="earnings-list-item">
+                    <h3 *ngFor="let header of listHeaders" (click)="changeSortColumn(header)">
+                        {{header.name}}
+                        <span *ngIf="header.arrowDirection == -1">&darr;</span>
+                        <span *ngIf="header.arrowDirection == 1">&uarr;</span>
+                    </h3>
+                </div>
+                <div class="earnings-list-item" *ngFor="let item of earningsToShow">
+                    <p>{{item.date | date : undefined : undefined : "pl-PL"}}</p>
+                    <p>{{item.category}}</p>
+                    <p>{{item.value}}</p>
+                </div>
             </div>
         </div>
-    </div>
+    
+        <div class="content-right">
+            <div class="line" [chart]="earningHistoryChart"></div>
+            <div class="line" [chart]="earningsByCategoryChart"></div>
+            Saldo: {{totalValue}}
+        </div>
+    </div>    
 </div>
 
 <div class="modal-background" *ngIf="!modalDisabled" (click)="closeModal()"></div>

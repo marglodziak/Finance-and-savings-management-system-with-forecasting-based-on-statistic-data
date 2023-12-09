@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { HttpService } from 'src/app/services/http.service';
+import { HttpService } from 'src/app/services/HttpService/http.service';
 
 @Component({
   selector: 'app-connect-user',

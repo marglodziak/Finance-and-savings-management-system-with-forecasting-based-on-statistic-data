@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Chart, ChartModule } from 'angular-highcharts';
 
 import { UserLayoutRoutes } from './user-layout.routing';
 import { MainSiteComponent } from '../../components/main-site/main-site.component';
@@ -23,7 +24,8 @@ import { HistoryComponent } from 'src/app/components/history/history.component';
   imports: [
     CommonModule,
     FormsModule,
-    RouterModule.forChild(UserLayoutRoutes)
+    RouterModule.forChild(UserLayoutRoutes),
+    ChartModule
   ]
 })
 export class UserLayoutModule { }
