@@ -116,3 +116,20 @@ h4 {
     min-width: 33%;
     text-align: center;
 }
+
+.delete-row {
+    position: absolute;
+    min-width: unset !important;
+    color: #bb0000;
+    font-weight: bold;
+    text-align: right !important;
+}
+
+.delete-row:hover {
+    cursor: pointer;
+    color: #ff0000;
+}
+
+.earnings-list-item :last-child{
+    text-align: right;
+}

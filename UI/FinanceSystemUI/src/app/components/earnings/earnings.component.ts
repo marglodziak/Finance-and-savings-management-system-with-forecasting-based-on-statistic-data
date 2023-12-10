@@ -6,6 +6,7 @@ import { Filters } from '../models/filters';
 import { Chart } from 'angular-highcharts';
 import { ChartService } from 'src/app/services/ChartService/chart.service';
 import { DateService } from 'src/app/services/DateService/date.service';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-earnings',
@@ -14,6 +15,7 @@ import { DateService } from 'src/app/services/DateService/date.service';
 })
 export class EarningsComponent implements OnInit{
   categories: string[] = [];
+  currencies: string[] = [];
   earningsInput: Earning[] = [];
   earningsReceived: Earning[] = [];
   earningsToShow: Earning[] = [];
@@ -28,6 +30,7 @@ export class EarningsComponent implements OnInit{
 
   addRowDisabled: boolean = true;
   modalDisabled: boolean = true;
+  deleteRowEnabled: boolean = false;
   totalValue: string = "";
 
   constructor(
@@ -42,22 +45,42 @@ export class EarningsComponent implements OnInit{
     this.filters = new Filters(monthEarlierDateFormatted, currentDateFormatted, "", 0, 1000, 20);
   }
 
-  ngOnInit(): void {
-    if (this.earningsReceived.length != 0)
-    {
-      return;
-    }
+  async ngOnInit(): Promise<void> {
+    await this.GetCurrencies();
+    await this.GetEarnings();
+    await this.GetEarningsCategories();
+    this.UpdateCharts();
+    this.sortItems(this.listHeaders[0]);
+  }
 
-    this.httpService.getEarnings().subscribe(response => {
-      this.earningsReceived = response;
-      this.earningsReceived.forEach(r => r.date = r.date.substring(0, 10));
-      this.earningsToShow = response.slice(0, Math.min(response.length, this.filters.numberOfItems));
-    });
+  private async GetCurrencies() {
+    this.currencies = await lastValueFrom(this.httpService.getCurrencies());
+  }
 
-    this.httpService.getEarningCategories().subscribe(response => {
-      this.categories = response;
-      this.earningsInput.push(this.CreateInputRow());
+  private async GetEarnings() {
+    let response = await lastValueFrom(this.httpService.getEarnings());
+    response.forEach(r => {
+      r.date = r.date.substring(0, 10);
+      r.value = r.value.toFixed(2);
     });
+    this.earningsReceived = response;
+    this.earningsToShow = this.earningsReceived.slice(0, Math.min(response.length, this.filters.numberOfItems));
+  }
+
+  private async GetEarningsCategories() {
+    this.categories = await lastValueFrom(this.httpService.getEarningCategories());
+    this.earningsInput.push(this.CreateInputRow());
+  }
+
+  private UpdateCharts() {
+    let dates = this.dateService.GetDatesInRange(this.filters.startDate, this.filters.endDate);
+    let earningValues = this.chartService.FormatEarningValuesInTime(dates, this.earningsToShow);
+    let earningsByCategory = this.chartService.CalculateEarningsByCategory(this.earningsToShow);
+
+    this.earningHistoryChart = this.chartService.GenerateLineChart("Ostatnie wpływy", dates, earningValues);
+    this.earningsByCategoryChart = this.chartService.GeneratePieChart("Ostatnie wpływy", dates, earningsByCategory);
+
+    this.totalValue = this.earningsToShow.map(e => parseFloat(e.value)).reduce((a,b) => a+b).toFixed(2);
   }
 
   trackByFn(index: any) {
@@ -119,17 +142,6 @@ export class EarningsComponent implements OnInit{
 
     this.earningsToShow = this.earningsToShow.slice(0, Math.min(this.earningsToShow.length, this.filters.numberOfItems));
   }
-
-  private UpdateCharts() {
-    let dates = this.dateService.GetDatesInRange(this.filters.startDate, this.filters.endDate);
-    let earningValues = this.chartService.FormatEarningValuesInTime(dates, this.earningsToShow);
-    let earningsByCategory = this.chartService.CalculateEarningsByCategory(this.earningsToShow);
-
-    this.earningHistoryChart = this.chartService.GenerateLineChart("Ostatnie wpływy", dates, earningValues);
-    this.earningsByCategoryChart = this.chartService.GeneratePieChart("Ostatnie wpływy", dates, earningsByCategory);
-
-    this.totalValue = this.earningsToShow.map(e => e.value).reduce((a,b) => a+b).toFixed(2);
-  }
   
   onChange(value: any)
   {
@@ -148,10 +160,28 @@ export class EarningsComponent implements OnInit{
 
   submitInput()
   {
-    let test = this.httpService.addEarning(JSON.stringify(this.earningsInput)).subscribe();
-    this.earningsReceived = this.earningsReceived.concat(this.earningsInput);
-    this.ResetInput();
-    this.sortItems(this.listHeaders.find(h => h.arrowDirection != 0)!);
+    if (!this.IsInputValid())
+    {
+      alert("invalid");
+      return;
+    }
+
+    alert("valid");
+
+    //let test = this.httpService.addEarning(JSON.stringify(this.earningsInput)).subscribe();
+    // this.earningsReceived = this.earningsReceived.concat(this.earningsInput);
+    // this.ResetInput();
+    // this.sortItems(this.listHeaders.find(h => h.arrowDirection != 0)!);
+  }
+
+  IsInputValid() {
+    let invalidItems = this.earningsInput
+    .filter( e => {
+      let k = parseFloat(e.value.toLocaleString());
+      return Number.isNaN(k);
+    });
+
+    return invalidItems.length == 0;
   }
 
   private ResetInput()
@@ -161,6 +191,18 @@ export class EarningsComponent implements OnInit{
 
   private CreateInputRow()
   {
-    return new Earning(this.dateService.FormatDateToLocale(new Date()), this.categories[0], "0.00");
+    return new Earning(this.dateService.FormatDateToLocale(new Date()), this.categories[0], "", "0.00", "PLN");
+  }
+
+  LetDeleteRows() {
+    this.deleteRowEnabled = !this.deleteRowEnabled;
+  }
+
+  DeleteRow() {
+    if (!confirm("Czy na pewno chcesz usunąć?")) {
+      return;
+    };
+
+    alert('deleted');
   }
 }

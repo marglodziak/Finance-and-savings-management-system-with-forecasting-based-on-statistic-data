@@ -2,7 +2,8 @@
     <div class="content">
         <div class="content-left">
             <h3>Ostatnie wpływy</h3>
-            <button (click)="openModal()">+<br/>Dodaj wpływy</button>
+            <button (click)="openModal()">+<br/>Dodaj</button>
+            <button (click)="LetDeleteRows()">-<br/>{{deleteRowEnabled === false ? "Usuń" : "Zakończ"}}</button>
             <div class="filters">
                 <input type="date"
                     [(ngModel)]="filters.startDate"
@@ -43,6 +44,7 @@
                     </h3>
                 </div>
                 <div class="earnings-list-item" *ngFor="let item of earningsToShow">
+                    <p class="delete-row" *ngIf="deleteRowEnabled" (click)="DeleteRow()">X</p>
                     <p>{{item.date | date : undefined : undefined : "pl-PL"}}</p>
                     <p>{{item.category}}</p>
                     <p>{{item.value}}</p>

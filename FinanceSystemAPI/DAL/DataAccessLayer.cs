@@ -103,6 +103,18 @@ namespace FinanceSystemAPI.DAL
             return categories;
         }
 
+        public IEnumerable<string> GetCurrencies()
+        {
+            var result = _dal.ExecuteProcedure("[dbo].[usp_Currencies_Select]", new SqlParameter[] { });
+
+            if (!result.IsSuccessful)
+            {
+                throw new ArgumentException();
+            }
+
+            return ConvertDataTable<string>(result.ReturnedData);
+        }
+
         private IEnumerable<string> GetGeneralEarningCategories()
         {
             var result = _dal.ExecuteProcedure("[dbo].[usp_EarningsCategoriesGeneral_Select]", new SqlParameter[] { });

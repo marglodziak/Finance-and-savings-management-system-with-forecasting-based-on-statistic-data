@@ -20,7 +20,7 @@ export class ChartService {
         currentDateIndex += 1;
       }
       else {
-        values[currentDateIndex] += earningsSortedAsc[currentEarningIndex].value;
+        values[currentDateIndex] += parseFloat(earningsSortedAsc[currentEarningIndex].value);
         currentEarningIndex += 1;
       }
     }
@@ -35,7 +35,7 @@ export class ChartService {
     uniqueCategories.forEach(c => {
       let categoryEntries = earnings.filter(e => e.category == c);
       let totalValue = categoryEntries
-        .map(e => e.value)
+        .map(e => parseFloat(e.value))
         .reduce((a,b) => a+b);
 
       data.push( {name: c, y: Number(totalValue.toFixed(2))} )

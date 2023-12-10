@@ -49,6 +49,16 @@ namespace FinanceSystemAPI.Controllers
             return Ok();
         }
 
+        [Route("Currencies")]
+        [HttpGet]
+        public IActionResult GetCurrencies([FromBody] Earning[] earnings)
+        {
+            var dal = new DataAccessLayer();            
+
+            return Ok(dal.GetCurrencies());
+        }
+
+
         private int GetUserId(DataAccessLayer dal)
         {
             var user = HttpContext.User;

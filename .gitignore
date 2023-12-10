@@ -46,6 +46,15 @@ Thumbs.db
 /FinanceSystemAPI/.vs
 /FinanceSystemAPI/bin/Debug/net8.0
 /FinanceSystemAPI/obj
+/ExchangeRatesUpdater/.vs
+/ExchangeRatesUpdater/bin/Debug/net8.0
+/ExchangeRatesUpdater/obj
+/AppConfig/.vs
+/AppConfig/bin/Debug/net8.0
+/AppConfig/obj
+/DataAccessLayerGeneric/.vs
+/DataAccessLayerGeneric/bin/Debug/net8.0
+/DataAccessLayerGeneric/obj
 /Test/bin/Debug/net8.0
 /Test/obj
 /Test/Pages

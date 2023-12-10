@@ -15,6 +15,7 @@ export class HttpService {
   private registrationUrl: string = this.baseUrl + "Authorization/Register/";
   private loginUrl: string = this.baseUrl + "Authorization/Login/";
   private earningsUrl: string = this.baseUrl + "Finances/Earnings/";
+  private currenciesUrl: string = this.baseUrl + "Finances/Currencies/";
   private earningCategoriesUrl: string = this.baseUrl + "Finances/EarningCategories/";
   private options = { 'headers': new HttpHeaders({"Content-Type": "application/json"}) };
 
@@ -28,6 +29,17 @@ export class HttpService {
   logIn(email: string, password: string)
   {
     return this.http.post<Token>(this.loginUrl, { "Email": email, "Password": password}, this.options);
+  }
+
+  getCurrencies() : Observable<string[]> {
+    if (this.authService.isUserLoggedIn())
+    {
+      this.options.headers = this.options.headers.set('Authorization', "Bearer " + window.sessionStorage.getItem("accessToken"));
+
+      return this.http.get<string[]>(this.earningsUrl, this.options);
+    }
+
+    return new Observable<string[]>;    
   }
 
   getEarnings() : Observable<Earning[]>
