@@ -8,7 +8,6 @@ namespace ExchangeRatesUpdater
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
             var response = GetCurrentExchangeRates().Result;
 
             if (!response.IsSuccessStatusCode)
@@ -25,8 +24,7 @@ namespace ExchangeRatesUpdater
             }
 
             var dal = new DataAccessLayer();
-            dal.Test();
-
+            dal.UpdateExchangeRates(exchangeRates.Rates);
         }
 
         private static async Task<HttpResponseMessage> GetCurrentExchangeRates()

@@ -20,7 +20,7 @@ export class ChartService {
         currentDateIndex += 1;
       }
       else {
-        values[currentDateIndex] += parseFloat(earningsSortedAsc[currentEarningIndex].value);
+        values[currentDateIndex] += parseFloat(earningsSortedAsc[currentEarningIndex].currentValueInPLN);
         currentEarningIndex += 1;
       }
     }
@@ -35,7 +35,7 @@ export class ChartService {
     uniqueCategories.forEach(c => {
       let categoryEntries = earnings.filter(e => e.category == c);
       let totalValue = categoryEntries
-        .map(e => parseFloat(e.value))
+        .map(e => parseFloat(e.currentValueInPLN))
         .reduce((a,b) => a+b);
 
       data.push( {name: c, y: Number(totalValue.toFixed(2))} )
@@ -50,17 +50,26 @@ export class ChartService {
         type: 'line'
       },
       title: {
-        text: title
+        text: title,
+        style: {
+          fontSize: '1rem'
+        }
       },
       credits: {
         enabled: false
       },
       xAxis: {
-        categories: categories
+        categories: categories,
+        labels: {
+          style: {
+            fontSize: '0.6rem'
+          }
+        }
       },
       series: [
         {
-          name: "Line 1",
+          showInLegend: false,
+          name: "Wpływy",
           type: "spline",
           data: data
         }
@@ -91,7 +100,7 @@ export class ChartService {
     },
       series: [
         {
-          name: "Line 1",
+          name: "Wpływy",
           type: "pie",
           data: data
         }

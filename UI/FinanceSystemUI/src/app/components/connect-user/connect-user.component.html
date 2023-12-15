@@ -1,50 +1,28 @@
-<div class="connectUserCardContainer">
-    <div class="connectUserCard">
-        <h3>
-            Wybierz istniejącego użytkownika
-        </h3>
-        <form name="loginForm" (ngSubmit)="onSubmitExisting()">
-            <div class="input-block">
-                <label for="email">E-mail</label>
-                <input type="text" id="email" [(ngModel)]="email" name="email">
-            </div>
-
-            <div class="input-block">
-                <label for="password">Hasło</label>
-                <input type="password" id="password" [(ngModel)]="password" name="password">
-            </div>
-            
-            <button id="login-button">Zaloguj</button>        
-        </form>
+<div class="container">
+    <div class="item-container">
+        <div class="connectUserCard">
+            <h3 class="code-item"> Kod dla innego użytkownika </h3>
+            <button class="code-item" *ngIf="!isCodeGenerated" (click)="generateCode()">WYGENERUJ KOD</button>
+            <span class="code-item" *ngIf="isCodeGenerated">{{connectionCode}}</span>
+        </div>
+        <div class="connectUserCard">
+            <h3 class="code-item"> Wprowadź otrzymany kod </h3>
+            <input
+                type="text"
+                class="code-item"
+                [(ngModel)]="connectionCodeInput"
+                (keyup.enter)="checkCode()"/>
+        </div>
     </div>
-    <div class="separator"></div>
-    <div class="connectUserCard">
-        <h3>
-            Utwórz nowego użytkownika
-        </h3>
-        <form name="registerForm" (ngSubmit)="onSubmitNew()">
-            <div class="input-block">
-                <label for="email">E-mail</label>
-                <input type="text" id="email" [(ngModel)]="email" name="email">
-            </div>
+    <div class="item-container">
+        Połączeni użytkownicy
 
-            <div class="input-block">
-                <label for="password">Hasło</label>
-                <input type="password" id="password" [(ngModel)]="password" name="password">
-            </div>
-            <div class="validationError" *ngIf="!validPassword">
-                {{ errorMsgPassword }}
-            </div>
-            <div class="input-block">
-                <label for="passwordAgain">Powtórz hasło</label>
-                <input type="password" id="passwordAgain" [(ngModel)]="passwordRepeated" name="passwordAgain" minlength="4">
-            </div>
-            <div class="validationError" *ngIf="!validPassword">
-                    {{ errorMsgPasswordRepeated }}
-            </div>
-            
-            <button id="register-button">Załóż konto</button>        
-        </form>
-    </div>
+        <div class="connected-user-item" *ngFor="let user of connectedUsers">
+            <span *ngIf="!user.isEditable">{{user.connectedUsername}}</span>
+            <input type="text"
+                [(ngModel)]="user.connectedUsername"
+                *ngIf="user.isEditable"/>
+            <button (click)="changeUsername(user)">Zmień nazwę</button>
+
+    </div>    
 </div>
-

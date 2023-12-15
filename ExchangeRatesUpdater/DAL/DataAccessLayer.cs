@@ -1,15 +1,22 @@
 ﻿using DataAccessLayerGeneric;
+using ExchangeRatesUpdater.Models;
 using Microsoft.Data.SqlClient;
 
 namespace ExchangeRatesUpdater.DAL
 {
-    internal class DataAccessLayer
+    internal class DataAccessLayer : DalGeneric
     {
-        private DalGeneric _dal = new ();
-
-        public void Test()
+        public void UpdateExchangeRates(RateDetails[] rates)
         {
-            _dal.ExecuteProcedure("dbo.usp_Test", new SqlParameter[] { });
+            foreach (var rate in rates)
+            {
+                ExecuteProcedure("dbo.usp_ExchangeRates_Update", new SqlParameter[]
+                {
+                    new SqlParameter("@p_CurrencyCode", rate.Code),
+                    new SqlParameter("@p_CurrencyName", rate.Currency),
+                    new SqlParameter("@p_CurrentExchangeRate", rate.Mid)
+                });
+            }            
         }
     }
 }

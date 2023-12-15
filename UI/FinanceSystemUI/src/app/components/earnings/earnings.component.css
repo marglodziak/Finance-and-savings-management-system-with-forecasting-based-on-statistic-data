@@ -11,12 +11,19 @@
     color:#f6fffa;
 }
 
+h3 {
+    color: #f6fffa;
+}
+
+h4 {
+    margin: 0.3em;
+}
+
 .content {
     position: absolute;
     overflow-y: scroll;
-    padding: 0 5%;
     box-sizing: border-box;
-    width: 80%;
+    width: 95%;
     height: 94%;
     display: flex;
     flex-direction: row;
@@ -25,12 +32,53 @@
     border-radius: 1rem;
 }
 
-h3 {
-    color: #f6fffa;
+.content-left {
+    width: 60%;
+    padding: 2%;
 }
 
-h4 {
+.earnings-button {
+    padding: 0.3em;
     margin: 0.3em;
+}
+
+.earnings-list {
+    background-color: rgba(59, 59, 59, 0.7);
+    color: #f6fffa;
+    border-radius: 1rem;
+}
+
+.earnings-list-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.earnings-list-item > p, h3{
+    min-width: 14%;
+    text-align: center;
+}
+
+.headers-list {
+    display: flex;
+    justify-content: space-between;
+}
+
+.delete-row {
+    position: absolute;
+    min-width: unset !important;
+    color: #bb0000;
+    font-weight: bold;
+    text-align: right !important;
+}
+
+.delete-row:hover {
+    cursor: pointer;
+    color: #ff0000;
+}
+
+.earnings-list-item :last-child{
+    text-align: right;
 }
 
 .modal-background {
@@ -75,7 +123,7 @@ h4 {
     scale: 1.2;
 }
 
-.input-item {
+.input-item-modal {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
@@ -83,53 +131,37 @@ h4 {
     margin: 0.2rem;
 }
 
-.input-item > input, select {
+.input-item-modal > * {
+    width: 16%;
+    text-align: center;
+}
+
+.input-item-modal > input, select {
     border: none;
     border-radius: 0.1rem;
 }
 
-.line {
-    width: 30vw;
-    height: auto;
-    overflow: visible;
+.content-right {
+    width: 35%;
+    height: 100%;
+    position: relative;
 }
 
-.earnings-button {
-    padding: 0.3em;
-    margin: 0.3em;
+.chart {
+    height: 48%;
+    max-width: 100%;
+    
 }
 
-.earnings-list {
-    width: 60%;
-    background-color: rgba(59, 59, 59, 0.7);
-    color: #f6fffa;
-    border-radius: 1rem;
+.chart:nth-child(1) {
+    max-width: 100% !important;
 }
 
-.earnings-list-item {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+.chart:nth-of-type(1) {
+    top: 0;
 }
 
-.earnings-list-item > p, h3{
-    min-width: 33%;
-    text-align: center;
+.chart:nth-of-type(2) {
+    bottom: 0;
 }
 
-.delete-row {
-    position: absolute;
-    min-width: unset !important;
-    color: #bb0000;
-    font-weight: bold;
-    text-align: right !important;
-}
-
-.delete-row:hover {
-    cursor: pointer;
-    color: #ff0000;
-}
-
-.earnings-list-item :last-child{
-    text-align: right;
-}

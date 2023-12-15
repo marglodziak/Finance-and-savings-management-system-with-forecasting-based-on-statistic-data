@@ -1,19 +1,17 @@
-using System.Web.Helpers;
+using System.Text;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using FinanceSystemAPI.Models;
-using FinanceSystemAPI.DAL;
-using FinanceSystemAPI.Config;
-using FinanceSystemAPI.Helpers;
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using JWT.Builder;
 using JWT.Algorithms;
+using FinanceSystemAPI.Models;
+using FinanceSystemAPI.DAL;
+using FinanceSystemAPI.Helpers;
+using AppConfig;
 
 namespace FinanceSystemAPI.Controllers
 {
     [ApiController]
-    [Authorize]
     [EnableCors("AllowCorsPolicy")]
     [Route("[controller]")]
     public class AuthorizationController : ControllerBase
@@ -35,7 +33,6 @@ namespace FinanceSystemAPI.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [Route("Login")]
         public IActionResult LoginUser(Credentials credentials)
         {
@@ -70,13 +67,13 @@ namespace FinanceSystemAPI.Controllers
         {
             var user = HttpContext.User;
             
-            if (user.HasClaim(c => c.Type == AppConfig.UsernameClaim))
+            if (user.HasClaim(c => c.Type == Config.UsernameClaim))
             {
-                string username = user.FindFirst(c => c.Type == AppConfig.UsernameClaim).Value;
+                string username = user.FindFirst(c => c.Type == Config.UsernameClaim).Value;
             }
-            if (user.HasClaim(c => c.Type == AppConfig.RoleClaim))
+            if (user.HasClaim(c => c.Type == Config.RoleClaim))
             {
-                int role = Convert.ToInt32(user.FindFirst(c => c.Type == AppConfig.RoleClaim).Value);
+                int role = Convert.ToInt32(user.FindFirst(c => c.Type == Config.RoleClaim).Value);
             }
             return Ok("123");
         }
@@ -85,11 +82,11 @@ namespace FinanceSystemAPI.Controllers
         {
             return new JwtBuilder()
                 .WithAlgorithm(new HMACSHA256Algorithm())
-                .WithSecret(Encoding.ASCII.GetBytes(AppConfig.FinanceSystemSigningKey))
-                .Issuer(AppConfig.FinanceSystemIssuer)
-                .AddClaim(AppConfig.ExpirationClaim, DateTimeOffset.UtcNow.AddMinutes(AppConfig.ExpirationTime).ToUnixTimeSeconds())
-                .AddClaim(AppConfig.UsernameClaim, email)
-                .AddClaim(AppConfig.RoleClaim, role)
+                .WithSecret(Encoding.ASCII.GetBytes(Config.FinanceSystemSigningKey))
+                .Issuer(Config.FinanceSystemIssuer)
+                .AddClaim(Config.ExpirationClaim, DateTimeOffset.UtcNow.AddMinutes(Config.ExpirationTime).ToUnixTimeSeconds())
+                .AddClaim(Config.UsernameClaim, email)
+                .AddClaim(Config.RoleClaim, role)
                 .Encode();
         }
     }

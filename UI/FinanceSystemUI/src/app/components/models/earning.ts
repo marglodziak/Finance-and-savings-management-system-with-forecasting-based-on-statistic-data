@@ -1,15 +1,19 @@
 export class Earning {
+    username: string;
     date: string;
     category: string;
     description: string;
     value: any;
-    currency: string;
+    currencyCode: string;
+    currentValueInPLN: any;
 
-    constructor(date: string = "", category: string = "", description: string = "", value: string = "", currency: string = "") {
+    constructor(username: string, date: string, category: string, description: string, value: string, currencyCode: string, currentValueInPLN: string) {
+        this.username = username;
         this.date = date;        
         this.category = category;
         this.description = description;
         this.value = parseFloat(value);
-        this.currency = currency;
+        this.currencyCode = currencyCode;
+        this.currentValueInPLN = parseFloat(currentValueInPLN);
     }
 }

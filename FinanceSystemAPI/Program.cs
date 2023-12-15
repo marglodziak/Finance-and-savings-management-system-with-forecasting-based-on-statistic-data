@@ -1,4 +1,5 @@
-using FinanceSystemAPI.Config;
+using AppConfig;
+using FinanceSystemAPI.ExceptionFilters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -26,6 +27,9 @@ namespace FinanceSystemAPI
                                   });
             });
 
+            //builder.Services.AddScoped<InvalidOperationExceptionFilter>();
+            //builder.Services.AddScoped<GeneralExceptionFilter>();
+
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -35,9 +39,9 @@ namespace FinanceSystemAPI
                         ValidateAudience = false,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = AppConfig.FinanceSystemIssuer,
-                        ValidAudience = AppConfig.FinanceSystemIssuer,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.FinanceSystemSigningKey))
+                        ValidIssuer = Config.FinanceSystemIssuer,
+                        ValidAudience = Config.FinanceSystemIssuer,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Config.FinanceSystemSigningKey))
                     };
                 });
 

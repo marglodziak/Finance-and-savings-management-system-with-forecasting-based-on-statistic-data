@@ -14,9 +14,7 @@
                     name=""
                     [min]="filters.startDate"> 
                 <select name="" id="" [(ngModel)]="filters.category">
-                    <option value="test">Test</option>
-                    <option selected value="">Dowolna</option>
-                    <option *ngFor="let category of categories" value="{{category}}">{{category}}</option>
+                    <option *ngFor="let category of categories" [ngValue]="category">{{category}}</option>
                 </select>
                 <input type="number"
                     [(ngModel)]="filters.minValue"
@@ -31,30 +29,38 @@
                 <input type="number"
                     [(ngModel)]="filters.numberOfItems"
                     name=""> 
+
+                <select name="" id="" [(ngModel)]="exchangeRateSelected">
+                    <option *ngFor="let er of exchangeRates" [ngValue]="er.currencyCode">{{er.currencyCode}}</option>
+                </select>
     
                 <button (click)="filterEarnings()">Filtruj</button>
             </div>
     
             <div class="earnings-list">
-                <div class="earnings-list-item">
-                    <h3 *ngFor="let header of listHeaders" (click)="changeSortColumn(header)">
+                <div class="headers-list">
+                    <h4 *ngFor="let header of listHeaders" (click)="changeSortColumn(header)">
                         {{header.name}}
                         <span *ngIf="header.arrowDirection == -1">&darr;</span>
                         <span *ngIf="header.arrowDirection == 1">&uarr;</span>
-                    </h3>
+                    </h4>
                 </div>
-                <div class="earnings-list-item" *ngFor="let item of earningsToShow">
+                <div class="earnings-list-item" *ngFor="let e of earningsToShow">
                     <p class="delete-row" *ngIf="deleteRowEnabled" (click)="DeleteRow()">X</p>
-                    <p>{{item.date | date : undefined : undefined : "pl-PL"}}</p>
-                    <p>{{item.category}}</p>
-                    <p>{{item.value}}</p>
+                    <p>{{e.username}}</p>
+                    <p>{{e.date | date : undefined : undefined : "pl-PL"}}</p>
+                    <p>{{e.category}}</p>
+                    <p>{{e.description}}</p>
+                    <p>{{e.value}}</p>
+                    <p>{{e.currencyCode}}</p>
+                    <p>{{e.currentValueInPLN}}</p>
                 </div>
             </div>
         </div>
     
         <div class="content-right">
-            <div class="line" [chart]="earningHistoryChart"></div>
-            <div class="line" [chart]="earningsByCategoryChart"></div>
+            <div class="chart" [chart]="earningHistoryChart"></div>
+            <div class="chart" [chart]="earningsByCategoryChart"></div>
             Saldo: {{totalValue}}
         </div>
     </div>    
@@ -63,30 +69,40 @@
 <div class="modal-background" *ngIf="!modalDisabled" (click)="closeModal()"></div>
 <div class="earnings-inputs-modal" *ngIf="!modalDisabled">
     <div class="close-modal" (click)="closeModal()">X</div>
-    <div class="input-item">
-        <h4>Data</h4>
-        <h4>Kategoria</h4>
-        <h4>Wartość</h4>
+    <div class="input-item-modal">
+        <h4 *ngFor="let header of listHeaders.slice(0, listHeaders.length-1)">{{header.name}}</h4>
     </div>
-    <div class="input-item" *ngFor="let earning of earningsInput; index as i; trackBy: trackByFn">
+    <div class="input-item-modal" *ngFor="let earning of earningsInput; index as i; trackBy: trackByFn">
         <input type="date"
             [(ngModel)]="earningsInput[i].date"
             (ngModelChange)="onChange($event)"
             name="dates{{i}}">                    
 
-        <select id="" placeholder="Wybierz kategorię" [(ngModel)]='earningsInput[i].category' (ngModelChange)="onChange($event)">
+        <select id="" [(ngModel)]='earningsInput[i].category' (ngModelChange)="onChange($event)">
             <option
                 *ngFor="let category of categories; let i = index"                        
-                value="{{category}}">
+                [ngValue]="category">
                 {{category}}
             </option>
         </select>
-            
 
         <input type="text"
-                [(ngModel)]="earningsInput[i].value"
-                (ngModelChange)="onChange($event)"
-                name="values{{i}}">
+            [(ngModel)]="earningsInput[i].description"
+            (ngModelChange)="onChange($event)"
+            name="desc{{i}}">
+
+        <input type="text"
+            [(ngModel)]="earningsInput[i].value"
+            (ngModelChange)="onChange($event)"
+            name="values{{i}}">
+
+        <select id="" [(ngModel)]='earningsInput[i].currencyCode' (ngModelChange)="onChange($event)">
+            <option
+                *ngFor="let er of exchangeRates; let i = index"     
+                [ngValue]="er.currencyCode">
+                {{er.currencyCode}}
+            </option>
+        </select>
     </div>  
     <div class="submit-buttons">
         <button class="earnings-button" [disabled]="addRowDisabled" (click)="addRow()">Dodaj wiersz</button>              

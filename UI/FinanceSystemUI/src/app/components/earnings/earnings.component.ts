@@ -7,6 +7,7 @@ import { Chart } from 'angular-highcharts';
 import { ChartService } from 'src/app/services/ChartService/chart.service';
 import { DateService } from 'src/app/services/DateService/date.service';
 import { lastValueFrom } from 'rxjs';
+import { ExchangeRate } from '../models/exchangeRate';
 
 @Component({
   selector: 'app-earnings',
@@ -15,14 +16,18 @@ import { lastValueFrom } from 'rxjs';
 })
 export class EarningsComponent implements OnInit{
   categories: string[] = [];
-  currencies: string[] = [];
+  exchangeRates: ExchangeRate[] = [];
   earningsInput: Earning[] = [];
   earningsReceived: Earning[] = [];
   earningsToShow: Earning[] = [];
   listHeaders: ListHeader[] = [
+    new ListHeader("Użytkownik", 0),
     new ListHeader("Data", -1),
     new ListHeader("Kategoria", 0),
-    new ListHeader("Wartość", 0)
+    new ListHeader("Opis", 0),
+    new ListHeader("Wartość", 0),
+    new ListHeader("Waluta", 0),
+    new ListHeader("PLN", 0)
   ]
   filters: Filters;
   earningHistoryChart: Chart = new Chart();
@@ -32,6 +37,7 @@ export class EarningsComponent implements OnInit{
   modalDisabled: boolean = true;
   deleteRowEnabled: boolean = false;
   totalValue: string = "";
+  exchangeRateSelected: string = "PLN";
 
   constructor(
     private httpService:HttpService,
@@ -46,15 +52,17 @@ export class EarningsComponent implements OnInit{
   }
 
   async ngOnInit(): Promise<void> {
-    await this.GetCurrencies();
+    await this.GetExchangeRates();
     await this.GetEarnings();
     await this.GetEarningsCategories();
+    this.addRow();
     this.UpdateCharts();
     this.sortItems(this.listHeaders[0]);
+    this.filters.category = this.categories[0];
   }
 
-  private async GetCurrencies() {
-    this.currencies = await lastValueFrom(this.httpService.getCurrencies());
+  private async GetExchangeRates() {
+    this.exchangeRates = await lastValueFrom(this.httpService.getExchangeRates());
   }
 
   private async GetEarnings() {
@@ -67,9 +75,13 @@ export class EarningsComponent implements OnInit{
     this.earningsToShow = this.earningsReceived.slice(0, Math.min(response.length, this.filters.numberOfItems));
   }
 
+  valueAfterExchange(earning: Earning) {
+    let currency = this.exchangeRates.find(er => er.currencyCode == earning.currencyCode); 
+    return (currency!.currentExchangeRate * earning.value).toFixed(2);
+  }
+
   private async GetEarningsCategories() {
     this.categories = await lastValueFrom(this.httpService.getEarningCategories());
-    this.earningsInput.push(this.CreateInputRow());
   }
 
   private UpdateCharts() {
@@ -80,19 +92,11 @@ export class EarningsComponent implements OnInit{
     this.earningHistoryChart = this.chartService.GenerateLineChart("Ostatnie wpływy", dates, earningValues);
     this.earningsByCategoryChart = this.chartService.GeneratePieChart("Ostatnie wpływy", dates, earningsByCategory);
 
-    this.totalValue = this.earningsToShow.map(e => parseFloat(e.value)).reduce((a,b) => a+b).toFixed(2);
+    this.totalValue = this.earningsToShow.map(e => parseFloat(e.currentValueInPLN)).reduce((a,b) => a+b).toFixed(2);
   }
 
   trackByFn(index: any) {
     return index;  
-  }
-
-  openModal() {
-    this.modalDisabled = false;
-  }
-
-  closeModal() {
-    this.modalDisabled = true;
   }
 
   changeSortColumn(header: ListHeader) {
@@ -152,6 +156,17 @@ export class EarningsComponent implements OnInit{
     }    
   }
 
+  openModal() {
+    this.modalDisabled = false;
+    // this.earningsInput = [];
+    // this.addRow();
+  }
+
+  closeModal() {
+    this.modalDisabled = true;
+  }
+
+
   addRow()
   {
     this.earningsInput.push(this.CreateInputRow());
@@ -168,10 +183,10 @@ export class EarningsComponent implements OnInit{
 
     alert("valid");
 
-    //let test = this.httpService.addEarning(JSON.stringify(this.earningsInput)).subscribe();
-    // this.earningsReceived = this.earningsReceived.concat(this.earningsInput);
+    let test = this.httpService.addEarning(JSON.stringify(this.earningsInput)).subscribe();
+    this.earningsReceived = this.earningsReceived.concat(this.earningsInput);
     // this.ResetInput();
-    // this.sortItems(this.listHeaders.find(h => h.arrowDirection != 0)!);
+    this.sortItems(this.listHeaders.find(h => h.arrowDirection != 0)!);
   }
 
   IsInputValid() {
@@ -191,7 +206,7 @@ export class EarningsComponent implements OnInit{
 
   private CreateInputRow()
   {
-    return new Earning(this.dateService.FormatDateToLocale(new Date()), this.categories[0], "", "0.00", "PLN");
+    return new Earning("Ja", this.dateService.FormatDateToLocale(new Date()), this.categories[0], "", "0.00", "PLN", "0.00");
   }
 
   LetDeleteRows() {

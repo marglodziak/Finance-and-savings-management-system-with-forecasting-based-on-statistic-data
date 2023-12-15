@@ -1,17 +1,15 @@
-﻿using FinanceSystemAPI.Models;
-using Microsoft.Data.SqlClient;
-using Newtonsoft.Json;
-using System.Data;
+﻿using Microsoft.Data.SqlClient;
+using DataAccessLayerGeneric;
+using DataAccessLayerGeneric.Models;
+using FinanceSystemAPI.Models;
 
 namespace FinanceSystemAPI.DAL
 {
-    public class DataAccessLayer
+    public class DataAccessLayer : DalGeneric
     {
-        private DataAccessLayerGeneric _dal = new();
-
         public SqlQueryResult RegisterUser(string email, string hashedPassword, string salt)
         {
-            return _dal.ExecuteProcedure("[dbo].[usp_User_Insert]", new SqlParameter[]
+            return ExecuteProcedure("[dbo].[usp_User_Insert]", new SqlParameter[]
             {
                 new SqlParameter("@p_Email", email),
                 new SqlParameter("@p_HashedPassword", hashedPassword),
@@ -19,25 +17,9 @@ namespace FinanceSystemAPI.DAL
             });
         }
 
-        public int GetUserId(string email)
-        {
-            
-            var result = _dal.ExecuteProcedure("[dbo].[usp_UserID_Select]", new SqlParameter[]
-            {
-                new SqlParameter("@p_Email", email)
-            });
-
-            if (!result.IsSuccessful)
-            {
-                throw new ArgumentException();
-            }
-
-            return Convert.ToInt32(result.ReturnedData.Rows[0]["Id"]);
-        }
-
         public SqlQueryResult GetUserDetails(string email)
         {
-            return _dal.ExecuteProcedure("[dbo].[usp_User_Select]", new SqlParameter[]
+            return ExecuteProcedure("[dbo].[usp_User_Select]", new SqlParameter[]
             {
                 new SqlParameter("@p_Email", email)
             });
@@ -51,12 +33,14 @@ namespace FinanceSystemAPI.DAL
             {
                 try
                 {
-                    _dal.ExecuteProcedure("[dbo].[usp_Earning_Insert]", new SqlParameter[]
+                    ExecuteProcedure("[dbo].[usp_Earning_Insert]", new SqlParameter[]
                     {
                     new SqlParameter("@p_UserId", userId),
                     new SqlParameter("@p_Date", earning.Date),
                     new SqlParameter("@p_Category", earning.Category),
-                    new SqlParameter("@p_Value", earning.Value)
+                    new SqlParameter("@p_Description", earning.Description),
+                    new SqlParameter("@p_Value", earning.Value),
+                    new SqlParameter("@p_CurrencyCode", earning.CurrencyCode)
                     });
                 }
                 catch
@@ -80,15 +64,10 @@ namespace FinanceSystemAPI.DAL
 
         public IEnumerable<Earning> GetUserEarnings(int userId)
         {
-            var result = _dal.ExecuteProcedure("[dbo].[usp_Earnings_Select]", new SqlParameter[]
+            var result = ExecuteProcedure("[dbo].[usp_Earnings_Select]", new SqlParameter[]
             {
                     new SqlParameter("@p_UserId", userId)
             });
-
-            if (!result.IsSuccessful)
-            {
-                throw new ArgumentException();
-            }
 
             return ConvertDataTable<Earning>(result.ReturnedData);
         }
@@ -98,65 +77,88 @@ namespace FinanceSystemAPI.DAL
             var categories = new List<string>();
 
             categories.AddRange(GetGeneralEarningCategories());
-
+            //TODO: custom categories as well
 
             return categories;
         }
 
+        public IEnumerable<RateDetails> GetExchangeRates()
+        {
+            var result = ExecuteProcedure("[dbo].[usp_ExchangeRates_Select]", Array.Empty<SqlParameter>());
+
+            return ConvertDataTable<RateDetails>(result.ReturnedData);
+        }
+
         public IEnumerable<string> GetCurrencies()
         {
-            var result = _dal.ExecuteProcedure("[dbo].[usp_Currencies_Select]", new SqlParameter[] { });
-
-            if (!result.IsSuccessful)
-            {
-                throw new ArgumentException();
-            }
+            //throw new InvalidOperationException();
+            var result = ExecuteProcedure("[dbo].[usp_Currencies_Select]", Array.Empty<SqlParameter>());
 
             return ConvertDataTable<string>(result.ReturnedData);
         }
 
         private IEnumerable<string> GetGeneralEarningCategories()
         {
-            var result = _dal.ExecuteProcedure("[dbo].[usp_EarningsCategoriesGeneral_Select]", new SqlParameter[] { });
-
-            if (!result.IsSuccessful)
-            {
-                throw new ArgumentException();
-            }
+            var result = ExecuteProcedure("[dbo].[usp_EarningsCategoriesGeneral_Select]", new SqlParameter[] { });
 
             return ConvertDataTable<string>(result.ReturnedData);
         }
 
-        private static IEnumerable<T> ConvertDataTable<T>(DataTable dt)
+        public SqlQueryResult SetConnectionCode(int userId, int connectionCode, DateTime validTo)
         {
-            return dt.Columns.Count == 1 ? ConvertSimpleData<T>(dt) : ConvertComplexData<T>(dt);
-        }
-
-        private static IEnumerable<T> ConvertSimpleData<T>(DataTable dt)
-        {
-            var data = new List<T>();
-
-            foreach (DataRow row in dt.Rows)
+            return ExecuteProcedure("[dbo].[usp_ConnectUserRequest_Insert]", new SqlParameter[]
             {
-                data.Add(GetItems<T>(row));
-            }
-
-            return data;
+                new SqlParameter("@p_UserId", userId),
+                new SqlParameter("@p_ConnectUserCode", connectionCode),
+                new SqlParameter("@p_ValidTo", validTo)
+            });
         }
 
-        private static T GetItems<T>(DataRow dr)
+        public ConnectionCodeDetails GetConnectionCode(int code)
         {
-            string drSerialized = JsonConvert.SerializeObject(dr.ItemArray[0]);
-            var drDeserialized = JsonConvert.DeserializeObject<T>(drSerialized);
+            var result = ExecuteProcedure("[dbo].[usp_ConnectUserRequest_Select]", new SqlParameter[]
+            {
+                new SqlParameter("@p_ConnectUserCode", code)
+            });
 
-            return drDeserialized;
+            return ConvertDataTable<ConnectionCodeDetails>(result.ReturnedData).FirstOrDefault();
         }
 
-        private static IEnumerable<T> ConvertComplexData<T>(DataTable dt)
+        public SqlQueryResult ConnectUsers(int connectingUserId, int userConnectedToId)
         {
-            string drSerialized = JsonConvert.SerializeObject(dt);
+            return ExecuteProcedure("[dbo].[usp_ConnectedUsers_Insert]", new SqlParameter[]
+            {
+                new SqlParameter("@p_ConnectingUserId", connectingUserId),
+                new SqlParameter("@p_UserConnectedToId", userConnectedToId)
+            });
+        }
 
-            return JsonConvert.DeserializeObject<T[]>(drSerialized);
+        public void ChangeUsername(int currentUserId, int userConnectedToId, string newUsername)
+        {
+            ExecuteProcedure("[dbo].[usp_ConnectedUser_Update]", new SqlParameter[]
+            {
+                new SqlParameter("@p_CurrentUserId", currentUserId),
+                new SqlParameter("@p_UserConnectedToId", userConnectedToId),
+                new SqlParameter("@p_Username", newUsername)
+            });
+        }
+
+        public IEnumerable<ConnectedUser> GetConnectedUsers(int userId)
+        {
+            var result = ExecuteProcedure("[dbo].[usp_ConnectedUsers_Select]", new SqlParameter[]
+            {
+                new SqlParameter("@p_UserId", userId)
+            });
+
+            return ConvertDataTable<ConnectedUser>(result.ReturnedData);
+        }
+
+        public void CleanConnectionCodeQueue(int userId)
+        {
+            ExecuteProcedure("[dbo].[usp_ConnectUserRequest_Delete]", new SqlParameter[]
+            {
+                new SqlParameter("@p_UserId", userId)
+            });
         }
     }
 }
