@@ -58,6 +58,7 @@
     top: 0;
     left: var(--navbar-width);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     background-image: url('..\..\..\assets\user-layout\background.jpg');
@@ -65,4 +66,13 @@
     background-size: cover;
     width: calc(100vw - var(--navbar-width));
     height: 100%;
+    padding: 2rem 3rem;
+    box-sizing: border-box;
+}
+
+.info-bar {
+    width: 100%;
+    display: flex;
+    justify-content:left;
+    text-align: left;
 }

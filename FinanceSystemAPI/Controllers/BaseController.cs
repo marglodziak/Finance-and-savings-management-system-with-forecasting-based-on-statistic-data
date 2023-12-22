@@ -2,6 +2,7 @@
 using DataAccessLayerGeneric;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace FinanceSystemAPI.Controllers
 {
@@ -9,8 +10,7 @@ namespace FinanceSystemAPI.Controllers
     {
         protected int GetUserId()
         {
-            var user = HttpContext.User;
-            var userEmail = user.Claims.FirstOrDefault(c => c.Type == Config.UsernameClaim)?.Value ?? "";
+            var userEmail = GetUserEmail();
 
             var result = DalGeneric.ExecuteProcedure("[dbo].[usp_UserID_Select]", new SqlParameter[]
             {
@@ -18,6 +18,21 @@ namespace FinanceSystemAPI.Controllers
             });
 
             return Convert.ToInt32(result.ReturnedData.Rows[0]["Id"]);
+        }
+
+        protected string GetUserEmail()
+        {
+            var user = HttpContext.User;
+
+            return user.Claims.FirstOrDefault(c => c.Type == Config.UsernameClaim)?.Value ?? "";
+        }
+
+        protected string GetUserEmail(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var decodedToken = handler.ReadJwtToken(token);
+
+            return decodedToken.Claims.FirstOrDefault(c => c.Type == Config.UsernameClaim)?.Value ?? "";
         }
     }
 }

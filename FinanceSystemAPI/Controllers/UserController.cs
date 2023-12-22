@@ -14,13 +14,43 @@ namespace FinanceSystemAPI.Controllers
     public class UserController : BaseController
     {
         [HttpGet]
-        [Route("")]
-        public IActionResult GetConnectedUsers()
+        [Route("IAmConnectedTo")]
+        public IActionResult GetUsersIAmConnectedTo()
         {
             var userId = GetUserId();
-            var result = new DataAccessLayer().GetConnectedUsers(userId);
+            var result = new DataAccessLayer().GetConnectedUsers(userId, false);
 
             return Ok(result);
+        }
+
+        [HttpDelete]
+        [Route("IAmConnectedTo")]
+        public IActionResult DeleteUsersIAmConnectedTo([FromBody] string username)
+        {
+            var userId = GetUserId();
+            new DataAccessLayer().DeleteConnectedUsers(userId, null, username, false);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("ConnectedToMe")]
+        public IActionResult GetUsersConnectedToMe()
+        {
+            var userId = GetUserId();
+            var result = new DataAccessLayer().GetConnectedUsers(userId, true);
+
+            return Ok(result);
+        }
+
+        [HttpDelete]
+        [Route("ConnectedToMe")]
+        public IActionResult DeleteUsersConnectedToMe([FromBody] string email)
+        {
+            var userId = GetUserId();
+            new DataAccessLayer().DeleteConnectedUsers(userId, email, null, true);
+
+            return Ok();
         }
 
         [HttpPut]

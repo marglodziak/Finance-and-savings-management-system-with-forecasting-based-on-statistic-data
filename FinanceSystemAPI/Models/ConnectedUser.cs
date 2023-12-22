@@ -5,5 +5,6 @@
         public int ConnectingUserId { get; set; }
         public int UserConnectedToId { get; set; }
         public string ConnectedUsername { get; set; }
+        public string ConnectingEmail { get; set; }
     }
 }

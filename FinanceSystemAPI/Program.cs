@@ -41,12 +41,12 @@ namespace FinanceSystemAPI
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = Config.FinanceSystemIssuer,
                         ValidAudience = Config.FinanceSystemIssuer,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Config.FinanceSystemSigningKey))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Config.FinanceSystemSigningKey)),
+                        ClockSkew = TimeSpan.Zero
                     };
                 });
 
             var app = builder.Build();
-
             // Configure the HTTP request pipeline.
 
             app.UseHttpsRedirection();

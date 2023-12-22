@@ -11,12 +11,16 @@ export class ConnectUserComponent implements OnInit{
   isCodeGenerated: boolean = false;
   connectionCode: string = "";
   connectionCodeInput: string = "";
-  connectedUsers: ConnectedUser[] = [];
+  usersIAmConnectedTo: ConnectedUser[] = [];
+  usersConnectedToMe: ConnectedUser[] = [];
+  deleteConnectedToMeEnabled: boolean = false;
+  deleteIAmConnectedToEnabled: boolean = false;
 
   constructor(private httpService:HttpService) { }
 
   ngOnInit(): void {
-    this.httpService.getConnectedUsers().subscribe(response => this.connectedUsers = response);
+    this.httpService.getUsersIAmConnectedTo().subscribe(response => this.usersIAmConnectedTo = response);
+    this.httpService.getUsersConnectedToMe().subscribe(response => this.usersConnectedToMe = this.usersConnectedToMe.concat(response));
   }  
 
   generateCode() {
@@ -39,5 +43,35 @@ export class ConnectUserComponent implements OnInit{
 
   changeUsername(user: ConnectedUser) {
     user.isEditable = !user.isEditable;
+  }
+
+  deleteUserIAmConnectedTo(i: number) {
+    if (!confirm("Czy na pewno chcesz usunąć to połączenie?"))
+    {
+      return;
+    }
+
+    let username = this.usersIAmConnectedTo[i].connectedUsername;
+    this.httpService.deleteUserIAmConnectedTo(username).subscribe();
+    this.usersIAmConnectedTo.splice(i, 1);
+  }
+
+  deleteUserConnectedToMe(i: number) {
+    if (!confirm("Czy na pewno chcesz usunąć to połączenie?"))
+    {
+      return;
+    }
+
+    let userEmail = this.usersConnectedToMe[i].connectingEmail;
+    this.httpService.deleteUserConnectedToMe(userEmail).subscribe();
+    this.usersConnectedToMe.splice(i, 1);
+  }
+
+  editIAmConnectedTo() {
+    this.deleteIAmConnectedToEnabled = !this.deleteIAmConnectedToEnabled;
+  }
+
+  editConnectedToMe() {
+    this.deleteConnectedToMeEnabled = !this.deleteConnectedToMeEnabled;
   }
 }

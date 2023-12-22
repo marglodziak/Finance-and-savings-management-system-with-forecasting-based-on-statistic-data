@@ -42,21 +42,21 @@ h4 {
     margin: 0.3em;
 }
 
-.earnings-list {
-    background-color: rgba(59, 59, 59, 0.7);
-    color: #f6fffa;
-    border-radius: 1rem;
-}
-
-.earnings-list-item {
+.earnings-grid {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-.earnings-list-item > p, h3{
-    min-width: 14%;
+.earnings-grid-row {
+    display: grid;
+    grid-template-columns: 22% 22% 22% 22% 12%;
     text-align: center;
+    justify-items: center;
+}
+
+.btn-more {
+    width: 30%;
 }
 
 .headers-list {
@@ -70,6 +70,7 @@ h4 {
     color: #bb0000;
     font-weight: bold;
     text-align: right !important;
+    left: 1rem;
 }
 
 .delete-row:hover {
@@ -91,8 +92,7 @@ h4 {
 }
 
 .earnings-inputs-modal {
-    width: 80%;
-    min-width: 40vw;
+    width: 70vw;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

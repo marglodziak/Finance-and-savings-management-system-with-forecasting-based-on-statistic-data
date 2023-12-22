@@ -9,7 +9,7 @@ import { Earning } from 'src/app/components/models/earning';
 export class ChartService {
   constructor(private dateService: DateService) { }
 
-  FormatEarningValuesInTime(dates: string[], earnings: Earning[]) {
+  FormatEarningValuesInTime(dates: Date[], earnings: Earning[]) {
     let values: number[] = Array(dates.length).fill(0);
     let currentDateIndex = 0;
     let currentEarningIndex = 0;
@@ -44,7 +44,7 @@ export class ChartService {
     return data;
   }
 
-  GenerateLineChart(title: string, categories: string[], data: number[]) {
+  GenerateLineChart(title: string, categories: Date[], data: number[]) {
     return new Chart({
       chart: {
         type: 'line'
@@ -59,7 +59,7 @@ export class ChartService {
         enabled: false
       },
       xAxis: {
-        categories: categories,
+        categories: categories.map(c => c.toLocaleDateString()),
         labels: {
           style: {
             fontSize: '0.6rem'
@@ -77,7 +77,7 @@ export class ChartService {
     })
   }
 
-  GeneratePieChart(title: string, categories: string[], data: object[]) {
+  GeneratePieChart(title: string, categories: Date[], data: object[]) {
     return new Chart({
       chart: {
         type: 'pie'

@@ -28,7 +28,8 @@ export class LoginComponent{
       if (this.validPassword)
       {
         this.httpService.logIn(this.email, this.password).subscribe(response => {
-          this.authService.ProcessToken(response.token);
+          this.authService.SaveAccessToken(response.accessToken);
+          this.authService.SaveRefreshToken(response.refreshToken);
           window.location.reload();    
         });
       }

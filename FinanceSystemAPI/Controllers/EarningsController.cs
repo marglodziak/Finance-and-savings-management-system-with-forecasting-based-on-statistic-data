@@ -23,6 +23,13 @@ namespace FinanceSystemAPI.Controllers
             return Ok(result);
         }
 
+        [HttpDelete]
+        public IActionResult DeleteEarning([FromBody] int earningId)
+        {
+            new DataAccessLayer().DeleteEarning(earningId);
+            return Ok();
+        }
+
         [HttpGet]
         [Route("Categories")]
         public IActionResult GetEarningCategories()

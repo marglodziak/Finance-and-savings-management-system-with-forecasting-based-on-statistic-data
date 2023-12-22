@@ -3,7 +3,7 @@
         <div class="content-left">
             <h3>Ostatnie wpływy</h3>
             <button (click)="openModal()">+<br/>Dodaj</button>
-            <button (click)="LetDeleteRows()">-<br/>{{deleteRowEnabled === false ? "Usuń" : "Zakończ"}}</button>
+            <button (click)="LetDeleteRows()">-<br/>{{editRowsEnabled === false ? "Usuń" : "Zakończ"}}</button>
             <div class="filters">
                 <input type="date"
                     [(ngModel)]="filters.startDate"
@@ -37,23 +37,22 @@
                 <button (click)="filterEarnings()">Filtruj</button>
             </div>
     
-            <div class="earnings-list">
-                <div class="headers-list">
-                    <h4 *ngFor="let header of listHeaders" (click)="changeSortColumn(header)">
+            <div class="earnings-grid">
+                <div class="earnings-grid-row">
+                    <h4 *ngFor="let header of listHeadersShort" (click)="changeSortColumn(header)">
                         {{header.name}}
                         <span *ngIf="header.arrowDirection == -1">&darr;</span>
                         <span *ngIf="header.arrowDirection == 1">&uarr;</span>
                     </h4>
                 </div>
-                <div class="earnings-list-item" *ngFor="let e of earningsToShow">
-                    <p class="delete-row" *ngIf="deleteRowEnabled" (click)="DeleteRow()">X</p>
-                    <p>{{e.username}}</p>
-                    <p>{{e.date | date : undefined : undefined : "pl-PL"}}</p>
-                    <p>{{e.category}}</p>
-                    <p>{{e.description}}</p>
-                    <p>{{e.value}}</p>
-                    <p>{{e.currencyCode}}</p>
-                    <p>{{e.currentValueInPLN}}</p>
+                
+                <div class="earnings-grid-row" *ngFor="let e of earningsToShow; index as i">
+                    <span class="delete-row" *ngIf="deleteRowEnabled(i)" (click)="deleteRow(i)">X</span>
+                    <span>{{e.username}}</span>
+                    <span>{{e.date | date : undefined : undefined : "pl-PL"}}</span>
+                    <span>{{e.category}}</span>
+                    <span>{{e.value}} {{e.currencyCode}}</span>
+                    <button class="btn-more" (click)="showEarningDetails(e)">...</button>
                 </div>
             </div>
         </div>
@@ -66,11 +65,13 @@
     </div>    
 </div>
 
-<div class="modal-background" *ngIf="!modalDisabled" (click)="closeModal()"></div>
-<div class="earnings-inputs-modal" *ngIf="!modalDisabled">
+<!-- #region INPUT_MODAL -->
+
+<div class="modal-background" *ngIf="!inputModalDisabled" (click)="closeModal()"></div>
+<div class="earnings-inputs-modal" *ngIf="!inputModalDisabled">
     <div class="close-modal" (click)="closeModal()">X</div>
     <div class="input-item-modal">
-        <h4 *ngFor="let header of listHeaders.slice(0, listHeaders.length-1)">{{header.name}}</h4>
+        <h4 *ngFor="let header of listHeaders.slice(1, listHeaders.length-1)">{{header.name}}</h4>
     </div>
     <div class="input-item-modal" *ngFor="let earning of earningsInput; index as i; trackBy: trackByFn">
         <input type="date"
@@ -107,6 +108,30 @@
     <div class="submit-buttons">
         <button class="earnings-button" [disabled]="addRowDisabled" (click)="addRow()">Dodaj wiersz</button>              
         <button class="earnings-button" (click)="submitInput()">Zapisz wpływy</button>    
-    </div>
-              
+    </div>              
 </div> 
+
+<!-- endregion -->
+
+
+<!-- #region EARNING_DETAILS_MODAL -->
+<div class="modal-background" *ngIf="!earningDetailsModalDisabled" (click)="closeModal()"></div>
+<div class="earnings-inputs-modal" *ngIf="!earningDetailsModalDisabled">
+    <div class="close-modal" (click)="closeModal()">X</div>
+    <div class="input-item-modal">
+        <h4 *ngFor="let header of listHeaders">{{header.name}}</h4>
+    </div>
+    <div class="input-item-modal">
+        <span>{{earningSelected!.username}}</span>
+        <span>{{earningSelected!.date | date : undefined : undefined : "pl-PL"}}</span>
+        <span>{{earningSelected!.category}}</span>
+        <span>{{earningSelected!.description}}</span>
+        <span>{{earningSelected!.value}}</span>
+        <span>{{earningSelected!.currencyCode}}</span>
+        <span>{{earningSelected!.currentValueInPLN}}</span>
+    </div>         
+</div> 
+<!-- #endregion -->
+
+
+

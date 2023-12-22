@@ -20,6 +20,8 @@ export class EarningsComponent implements OnInit{
   earningsInput: Earning[] = [];
   earningsReceived: Earning[] = [];
   earningsToShow: Earning[] = [];
+  earningSelected: Earning | null = null;
+
   listHeaders: ListHeader[] = [
     new ListHeader("Użytkownik", 0),
     new ListHeader("Data", -1),
@@ -29,13 +31,21 @@ export class EarningsComponent implements OnInit{
     new ListHeader("Waluta", 0),
     new ListHeader("PLN", 0)
   ]
+  listHeadersShort: ListHeader[] = [
+    new ListHeader("Użytkownik", 0),
+    new ListHeader("Data", -1),
+    new ListHeader("Kategoria", 0),
+    new ListHeader("Wartość", 0),
+    new ListHeader("Więcej", 0)
+  ]
   filters: Filters;
   earningHistoryChart: Chart = new Chart();
   earningsByCategoryChart: Chart = new Chart();
 
   addRowDisabled: boolean = true;
-  modalDisabled: boolean = true;
-  deleteRowEnabled: boolean = false;
+  inputModalDisabled: boolean = true;
+  earningDetailsModalDisabled: boolean = true;
+  editRowsEnabled: boolean = false;
   totalValue: string = "";
   exchangeRateSelected: string = "PLN";
 
@@ -68,8 +78,9 @@ export class EarningsComponent implements OnInit{
   private async GetEarnings() {
     let response = await lastValueFrom(this.httpService.getEarnings());
     response.forEach(r => {
-      r.date = r.date.substring(0, 10);
+      r.date = r.date;
       r.value = r.value.toFixed(2);
+      r.currentValueInPLN = r.currentValueInPLN.toFixed(2);
     });
     this.earningsReceived = response;
     this.earningsToShow = this.earningsReceived.slice(0, Math.min(response.length, this.filters.numberOfItems));
@@ -109,7 +120,7 @@ export class EarningsComponent implements OnInit{
       header.arrowDirection *= -1;
     }
     else {
-      this.listHeaders.forEach(h => h.arrowDirection = 0);
+      this.listHeadersShort.forEach(h => h.arrowDirection = 0);
       header.arrowDirection = -1;
     }    
   }
@@ -157,13 +168,14 @@ export class EarningsComponent implements OnInit{
   }
 
   openModal() {
-    this.modalDisabled = false;
+    this.inputModalDisabled = false;
     // this.earningsInput = [];
     // this.addRow();
   }
 
   closeModal() {
-    this.modalDisabled = true;
+    this.inputModalDisabled = true;
+    this.earningDetailsModalDisabled = true;
   }
 
 
@@ -206,18 +218,28 @@ export class EarningsComponent implements OnInit{
 
   private CreateInputRow()
   {
-    return new Earning("Ja", this.dateService.FormatDateToLocale(new Date()), this.categories[0], "", "0.00", "PLN", "0.00");
+    return new Earning(-1, "Ja", this.dateService.FormatDateToLocale(new Date()), this.categories[0], "", "0.00", "PLN", "0.00");
+  }
+
+  showEarningDetails(earning: Earning) {
+    this.earningSelected = earning;
+    this.earningDetailsModalDisabled = false;
   }
 
   LetDeleteRows() {
-    this.deleteRowEnabled = !this.deleteRowEnabled;
+    this.editRowsEnabled = !this.editRowsEnabled;
   }
 
-  DeleteRow() {
+  deleteRowEnabled(index: number) {
+    return this.editRowsEnabled && this.earningsToShow[index].username == "Ja";
+  }
+
+  deleteRow(index: number) {
     if (!confirm("Czy na pewno chcesz usunąć?")) {
       return;
     };
 
-    alert('deleted');
+    let earningId = this.earningsToShow[index].id;
+    this.httpService.deleteEarning(earningId).subscribe();
   }
 }

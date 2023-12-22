@@ -17,12 +17,39 @@ namespace FinanceSystemAPI.DAL
             });
         }
 
-        public SqlQueryResult GetUserDetails(string email)
+        public DBUser GetUserDetails(string email)
         {
-            return ExecuteProcedure("[dbo].[usp_User_Select]", new SqlParameter[]
+            var result = ExecuteProcedure("[dbo].[usp_User_Select]", new SqlParameter[]
             {
                 new SqlParameter("@p_Email", email)
             });
+
+            return ConvertDataTable<DBUser>(result.ReturnedData).FirstOrDefault();
+        }
+
+        public string GetRefreshToken(int userId)
+        {
+            var result = ExecuteProcedure("[dbo].[usp_RefreshToken_Select]", new SqlParameter[]
+            {
+                new SqlParameter("@p_UserId", userId)
+            });
+
+            return ConvertDataTable<string>(result.ReturnedData).FirstOrDefault();
+        }
+
+        public void SaveRefreshToken(int userId, string refreshToken, DateTimeOffset validTo)
+        {
+            ExecuteProcedure("[dbo].[usp_RefreshToken_Insert]", new SqlParameter[]
+            {
+                new SqlParameter("@p_UserId", userId),
+                new SqlParameter("@p_RefreshToken", refreshToken),
+                new SqlParameter("@p_ValidTo", validTo)
+            });
+        }
+
+        public void DeleteInvalidRefreshTokens()
+        {
+            ExecuteProcedure("[dbo].[usp_RefreshTokens_Delete]", Array.Empty<SqlParameter>());
         }
 
         public SqlQueryResult AddEarnings(int userId, Earning[] earnings)
@@ -70,6 +97,14 @@ namespace FinanceSystemAPI.DAL
             });
 
             return ConvertDataTable<Earning>(result.ReturnedData);
+        }
+
+        public void DeleteEarning(int earningId)
+        {
+            ExecuteProcedure("[dbo].[usp_Earning_Delete]", new SqlParameter[]
+            {
+                new SqlParameter("@p_EarningId", earningId)
+            });
         }
 
         public IEnumerable<string> GetEarningCategories(int userId)
@@ -143,16 +178,27 @@ namespace FinanceSystemAPI.DAL
             });
         }
 
-        public IEnumerable<ConnectedUser> GetConnectedUsers(int userId)
+        public IEnumerable<ConnectedUser> GetConnectedUsers(int userId, bool connectedToMeMode)
         {
             var result = ExecuteProcedure("[dbo].[usp_ConnectedUsers_Select]", new SqlParameter[]
             {
-                new SqlParameter("@p_UserId", userId)
+                new SqlParameter("@p_UserId", userId),
+                new SqlParameter("@p_ConnectedToMeMode", connectedToMeMode)
             });
 
             return ConvertDataTable<ConnectedUser>(result.ReturnedData);
         }
 
+        public void DeleteConnectedUsers(int userId, string email, string username, bool connectedToMeMode)
+        {
+            ExecuteProcedure("[dbo].[usp_ConnectedUsers_Delete]", new SqlParameter[]
+            {
+                new SqlParameter("@p_UserId", userId),
+                new SqlParameter("@p_UserEmail", email),
+                new SqlParameter("@p_Username", username),
+                new SqlParameter("@p_ConnectedToMeMode", connectedToMeMode)
+            });
+        }
         public void CleanConnectionCodeQueue(int userId)
         {
             ExecuteProcedure("[dbo].[usp_ConnectUserRequest_Delete]", new SqlParameter[]

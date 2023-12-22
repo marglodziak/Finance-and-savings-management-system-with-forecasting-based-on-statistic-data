@@ -1,11 +1,11 @@
 <div class="container">
-    <div class="item-container">
-        <div class="connectUserCard">
+    <div class="connect-user-card">
+        <div class="card-item">
             <h3 class="code-item"> Kod dla innego użytkownika </h3>
             <button class="code-item" *ngIf="!isCodeGenerated" (click)="generateCode()">WYGENERUJ KOD</button>
             <span class="code-item" *ngIf="isCodeGenerated">{{connectionCode}}</span>
         </div>
-        <div class="connectUserCard">
+        <div class="card-item">
             <h3 class="code-item"> Wprowadź otrzymany kod </h3>
             <input
                 type="text"
@@ -14,15 +14,45 @@
                 (keyup.enter)="checkCode()"/>
         </div>
     </div>
-    <div class="item-container">
-        Połączeni użytkownicy
+    <div class="connect-user-card">
+        <div class="connected-users-header">
+            <h4>Użytkownicy, którzy udostępnili Ci dane</h4>
+            <button class="edit-button" (click)="editIAmConnectedTo()">{{deleteIAmConnectedToEnabled ? "Zakończ" : "Edytuj"}}</button>
+        </div>        
 
-        <div class="connected-user-item" *ngFor="let user of connectedUsers">
-            <span *ngIf="!user.isEditable">{{user.connectedUsername}}</span>
-            <input type="text"
-                [(ngModel)]="user.connectedUsername"
-                *ngIf="user.isEditable"/>
-            <button (click)="changeUsername(user)">Zmień nazwę</button>
+        <div class="connected-users-list">
+            <p>test</p>
+            <p>test</p>
+            <p>test</p>
+            <p>test</p>
+            <p>test</p>
+            <p>test</p>
+            <p>test</p>
+            <p>test</p>
+            <p>test</p>
+            <div class="connected-user-item" *ngFor="let user of usersIAmConnectedTo; index as i">
+                <span *ngIf="!user.isEditable">{{user.connectedUsername}}</span>
+                <input type="text"
+                    [(ngModel)]="user.connectedUsername"
+                    *ngIf="user.isEditable"/>
+                <button (click)="changeUsername(user)">Zmień nazwę</button>
+                <span class="delete-row" (click)="deleteUserIAmConnectedTo(i)" *ngIf="deleteIAmConnectedToEnabled">X</span>
+            </div>
+        </div>        
 
-    </div>    
+        <div class="connected-users-header">
+            <h4>Użytkownicy, którym udostępniasz dane</h4>
+            <button class="edit-button" (click)="editConnectedToMe()">{{deleteConnectedToMeEnabled === true ? "Zakończ" : "Edytuj"}}</button>
+        </div>
+
+        <div class="connected-users-list">
+            <div class="connected-user-item" *ngFor="let user of usersConnectedToMe; index as i">
+                <span *ngIf="!user.isEditable">{{user.connectingEmail}}</span>
+                <input type="text"
+                    [(ngModel)]="user.connectedUsername"
+                    *ngIf="user.isEditable"/>
+                <span class="delete-row" (click)="deleteUserConnectedToMe(i)" *ngIf="deleteConnectedToMeEnabled">X</span>
+            </div>
+        </div>        
+    </div> 
 </div>

@@ -19,13 +19,11 @@ export class DateService {
     return this.datePipe.transform(date, "yyyy-MM-dd")!;
   }
 
-  GetDatesInRange(startDateText: string, endDateText: string) {
-    var dates: string[] = [];
-    let startDate = new Date(startDateText);
-    let endDate = new Date(endDateText);
+  GetDatesInRange(startDate: Date, endDate: Date) {
+    var dates: Date[] = [];
 
     while (startDate <= endDate) {
-      dates.push(this.FormatDateToLocale(startDate));
+      dates.push(startDate);
       startDate = this.AddDays(startDate, 1);
     }
 

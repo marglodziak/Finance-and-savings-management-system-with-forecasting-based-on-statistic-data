@@ -8,13 +8,15 @@ using FinanceSystemAPI.Models;
 using FinanceSystemAPI.DAL;
 using FinanceSystemAPI.Helpers;
 using AppConfig;
+using Azure.Core;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace FinanceSystemAPI.Controllers
 {
     [ApiController]
     [EnableCors("AllowCorsPolicy")]
     [Route("[controller]")]
-    public class AuthorizationController : ControllerBase
+    public class AuthorizationController : BaseController
     {       
         [HttpPost]
         [Route("Register")]
@@ -36,55 +38,74 @@ namespace FinanceSystemAPI.Controllers
         [Route("Login")]
         public IActionResult LoginUser(Credentials credentials)
         {
-            var result = new DataAccessLayer().GetUserDetails(credentials.Email);
+            var dal = new DataAccessLayer();
+            var user = dal.GetUserDetails(credentials.Email);
 
-            if (!result.IsSuccessful || result.ReturnedData.Rows.Count == 0)
+            if (user is null)
             {
                 return BadRequest("B³êdne dane logowania");
             }
 
-            var salt = result.ReturnedData.Rows[0]["Salt"];
+            var hash = new PasswordHasher().HashPassword(credentials.Password, user.Salt);
 
-            if (salt is null)
-            {
-                throw new Exception("no salt recorded");
-            }
-
-            var hash = new PasswordHasher().HashPassword(credentials.Password, salt.ToString());
-
-            if (hash != result.ReturnedData.Rows[0]["Hash"].ToString())
+            if (hash != user.Hash)
             {
                 return BadRequest("B³êdne dane logowania");
             }
 
-            var token = GenerateJwtToken(credentials.Email, (int)result.ReturnedData.Rows[0]["Role_Id"]);
-            return Ok(new { Token = token });
+            return Ok(ProcessTokens(credentials.Email, user.Role_Id, user.Id, dal));            
         }
 
-        [HttpGet]
-        [Route("test")]
-        public IActionResult Test()
+        [HttpPost]
+        [Route("AccessToken")]
+        public IActionResult GetNewAccessToken([FromBody] string refreshToken)
         {
-            var user = HttpContext.User;
-            
-            if (user.HasClaim(c => c.Type == Config.UsernameClaim))
+            var dal = new DataAccessLayer();            
+            var userEmail = GetUserEmail(refreshToken);
+            var user = dal.GetUserDetails(userEmail);
+
+            var token = dal.GetRefreshToken(user.Id);
+
+            if (refreshToken != token)
             {
-                string username = user.FindFirst(c => c.Type == Config.UsernameClaim).Value;
+                return BadRequest("Invalid refresh token");
             }
-            if (user.HasClaim(c => c.Type == Config.RoleClaim))
-            {
-                int role = Convert.ToInt32(user.FindFirst(c => c.Type == Config.RoleClaim).Value);
-            }
-            return Ok("123");
+
+            return Ok(ProcessTokens(userEmail, user.Role_Id, user.Id, dal));
+        }
+
+        private object ProcessTokens(string email, int roleId, int userId, DataAccessLayer dal)
+        {
+            var accessToken = GenerateAccessToken(email, roleId);
+
+            var validToTime = DateTimeOffset.Now.AddMinutes(Config.RefreshTokenExpirationTime);
+            var refreshToken = GenerateRefreshToken(email, roleId, validToTime);
+
+            dal.SaveRefreshToken(userId, refreshToken, validToTime);
+            dal.DeleteInvalidRefreshTokens();
+
+            return new { AccessToken = accessToken, RefreshToken = refreshToken };
         }
         
-        private string GenerateJwtToken(string email, int role)
+        private string GenerateAccessToken(string email, int role)
         {
             return new JwtBuilder()
                 .WithAlgorithm(new HMACSHA256Algorithm())
                 .WithSecret(Encoding.ASCII.GetBytes(Config.FinanceSystemSigningKey))
                 .Issuer(Config.FinanceSystemIssuer)
-                .AddClaim(Config.ExpirationClaim, DateTimeOffset.UtcNow.AddMinutes(Config.ExpirationTime).ToUnixTimeSeconds())
+                .AddClaim(Config.ExpirationClaim, DateTimeOffset.UtcNow.AddMinutes(Config.AccessTokenExpirationTime).ToUnixTimeSeconds())
+                .AddClaim(Config.UsernameClaim, email)
+                .AddClaim(Config.RoleClaim, role)
+                .Encode();
+        }
+
+        private string GenerateRefreshToken(string email, int role, DateTimeOffset validToTime)
+        {
+            return new JwtBuilder()
+                .WithAlgorithm(new HMACSHA256Algorithm())
+                .WithSecret(Encoding.ASCII.GetBytes(Config.FinanceSystemSigningKey))
+                .Issuer(Config.FinanceSystemIssuer)
+                .AddClaim(Config.ExpirationClaim, validToTime.ToUnixTimeSeconds())
                 .AddClaim(Config.UsernameClaim, email)
                 .AddClaim(Config.RoleClaim, role)
                 .Encode();

@@ -1,6 +1,7 @@
-import { Component, OnChanges, OnInit } from '@angular/core';
+import { Component, OnChanges } from '@angular/core';
 import { NavbarItem } from 'src/app/components/models/navbarItem';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/AuthService/auth.service';
 
 @Component({
   selector: 'app-user-layout',
@@ -9,7 +10,7 @@ import { Router } from '@angular/router';
 })
 export class UserLayoutComponent implements OnChanges {
   
-  constructor(private router: Router) { }
+  constructor(private router: Router, private authService: AuthService) { }
 
   routes: NavbarItem[] = [
     new NavbarItem("Wpływy", "..\\..\\assets\\user-layout\\earnings.png", "earnings"),
@@ -24,7 +25,7 @@ export class UserLayoutComponent implements OnChanges {
 
   LogOut()
   {
-    window.sessionStorage.clear();
+    this.authService.LogOut();
     window.location.reload();
   }
 }
