@@ -37,6 +37,7 @@ export class AuthService {
   {
     let token = window.sessionStorage.getItem(this.accessTokenField) ?? "";
     return this.isAccessTokenValid(token)
+    // return true;
   }
 
   private isAccessTokenValid(token: string)

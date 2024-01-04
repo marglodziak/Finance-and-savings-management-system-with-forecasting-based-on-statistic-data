@@ -1,6 +1,6 @@
 ﻿namespace FinanceSystemAPI.Models
 {
-    public class Earning
+    public class Operation
     {
         public int Id { get; set; }
         public string Username { get; set; }

@@ -19,12 +19,33 @@ export class DateService {
     return this.datePipe.transform(date, "yyyy-MM-dd")!;
   }
 
-  GetDatesInRange(startDate: Date, endDate: Date) {
-    var dates: Date[] = [];
+  FormatDateToShort(date: Date) {
+    return this.datePipe.transform(date, "MM.yyyy")!;
+  }
 
-    while (startDate <= endDate) {
-      dates.push(startDate);
-      startDate = this.AddDays(startDate, 1);
+  GetDatesInRange(startDate: string, endDate: string) {
+    var dates: Date[] = [];
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+
+    while (start <= end) {
+      dates.push(new Date(start));
+      start = this.AddDays(start, 1);
+    }
+
+    return dates;
+  }
+
+  GetMonthsInRange(startDate: string, endDate: string) {
+    var dates: string[] = [];
+    let start = this.AddMonths(new Date(startDate), -6);
+    let end = new Date(endDate);
+    start.setDate(1);
+    end.setDate(1);
+
+    while (start <= end) {
+      dates.push(this.FormatDateToShort(start));
+      start = this.AddMonths(start, 1);
     }
 
     return dates;
@@ -32,6 +53,12 @@ export class DateService {
 
   AddDays(date: Date, n: number) {
     date.setDate(date.getDate() + n);
+
+    return date
+  }
+
+  AddMonths(date: Date, n: number) {
+    date.setMonth(date.getMonth() + n);
 
     return date
   }

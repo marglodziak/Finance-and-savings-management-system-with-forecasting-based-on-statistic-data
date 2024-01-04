@@ -1,7 +1,7 @@
-export class Earning {
+export class Operation {
     id: number;
     username: string;
-    date: Date;
+    date: string;
     category: string;
     description: string;
     value: any;
@@ -11,7 +11,7 @@ export class Earning {
     constructor(id: number, username: string, date: string, category: string, description: string, value: string, currencyCode: string, currentValueInPLN: string) {
         this.id = id;
         this.username = username;
-        this.date = new Date(date);        
+        this.date = date;   
         this.category = category;
         this.description = description;
         this.value = parseFloat(value);

@@ -1,12 +1,11 @@
-
 <div class="navbar">
-    <a [routerLink]="'.'">
-        <img src="..\..\assets\user-layout\logo.png" class="navbar-photo"/>
+    <a [routerLink]=routes[0].routerLink>
+        <img src={{routes[0].imagePath}} class="navbar-photo" (click)="tabChanged(routes[0])"/>
     </a>
     
     <div class="navbarItemsList">
-        <a *ngFor="let route of routes" [routerLink]=route.routerLink>
-            <div class="navbarItem">
+        <a *ngFor="let route of routes.slice(1)" [routerLink]=route.routerLink>
+            <div [ngClass]="route.isActive ? 'navbar-item-active' : 'navbar-item-inactive'" (click)="tabChanged(route)">
                 <img src={{route.imagePath}} class="navbar-photo"/>
                 {{route.name}}
             </div>
@@ -14,19 +13,26 @@
     </div>
 
     <a [routerLink]="['../authentication']">
-        <div class="navbarItem" (click)="LogOut()">
+        <div class="navbar-item-inactive" (click)="LogOut()">
             <img src="..\..\assets\user-layout\logout.png" class="navbar-photo"/>
             <span>Wyloguj</span>
         </div>
     </a>
 </div>
-<div class="current-page">
+<div class="page-window">
     <div class="info-bar">
-        Current page
-        Bieżące Saldo
-        Twój profil
+        <div class="info-bar-content">
+            <div class="current-page-name">{{currentTab.name}}</div>
+            <div class="profile-info">
+                <img src="..\..\assets\user-layout\total-money.png" class="profile-info-image"/>
+                Bieżące saldo {{total}}zł
+                <button class="profile-button">Twój profil</button>
+            </div>    
+        </div>   
     </div>
-    <router-outlet></router-outlet>
+    <div class="current-page">
+        <router-outlet></router-outlet>
+    </div>    
 </div>    
 
 

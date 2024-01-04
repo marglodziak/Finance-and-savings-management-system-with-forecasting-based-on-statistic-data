@@ -10,45 +10,45 @@ namespace FinanceSystemAPI.Controllers
     [Authorize]
     [EnableCors("AllowCorsPolicy")]
     [Route("[controller]")]
-    public class EarningsController : BaseController
+    public class ExpensesController : BaseController
     {
         [HttpGet]
-        public IActionResult GetEarnings()
+        public IActionResult GetExpenses()
         {
             var dal = new DataAccessLayer();
 
             var userId = GetUserId();
-            var result = dal.GetUserEarnings(userId);
+            var result = dal.GetUserExpenses(userId);
 
             return Ok(result);
         }
 
         [HttpDelete]
-        public IActionResult DeleteEarning([FromBody] int earningId)
+        public IActionResult DeleteExpense([FromBody] int expenseId)
         {
-            new DataAccessLayer().DeleteEarning(earningId);
+            new DataAccessLayer().DeleteExpense(expenseId);
             return Ok();
         }
 
         [HttpGet]
         [Route("Categories")]
-        public IActionResult GetEarningCategories()
+        public IActionResult GetExpenseCategories()
         {
             var dal = new DataAccessLayer();
 
             var userId = GetUserId();
-            var result = dal.GetEarningCategories(userId);
+            var result = dal.GetExpenseCategories(userId);
 
             return Ok(result);
         }
 
         [HttpPost]
-        public IActionResult AddEarnings([FromBody] Operation[] earnings)
+        public IActionResult AddExpense([FromBody] Operation[] expenses)
         {
             var dal = new DataAccessLayer();
             var userId = GetUserId();
 
-            dal.AddEarnings(userId, earnings);
+            dal.AddExpenses(userId, expenses);
 
             return Ok();
         }

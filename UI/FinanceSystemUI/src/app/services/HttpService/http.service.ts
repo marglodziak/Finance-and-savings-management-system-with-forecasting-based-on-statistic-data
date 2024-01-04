@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Token } from '../../components/models/token';
-import { Earning } from '../../components/models/earning';
+import { Operation } from '../../components/models/operation';
 import { Observable } from 'rxjs';
-import { ExchangeRate } from 'src/app/components/models/exchangeRate';
 import { ConnectedUser } from 'src/app/components/models/connectedUser';
 
 
@@ -16,10 +15,11 @@ export class HttpService {
   private registrationUrl: string = this.baseUrl + "Authorization/Register/";
   private loginUrl: string = this.baseUrl + "Authorization/Login/";
   private accessTokenUrl: string = this.baseUrl + "Authorization/AccessToken/";
-  private earningsUrl: string = this.baseUrl + "Earnings/";
-  private exchangeRatesUrl: string = this.baseUrl + "ExchangeRates/";
   private currenciesUrl: string = this.baseUrl + "ExchangeRates/Currencies/";
+  private earningsUrl: string = this.baseUrl + "Earnings/";
   private earningCategoriesUrl: string = this.baseUrl + "Earnings/Categories/";
+  private expensesUrl: string = this.baseUrl + "Expenses/";
+  private expenseCategoriesUrl: string = this.baseUrl + "Expenses/Categories/";
   private usersIAmConnectedToUrl: string = this.baseUrl + "User/IAmConnectedTo";
   private usersConnectedToMeUrl: string = this.baseUrl + "User/ConnectedToMe";
   private changeUsernameUrl: string = this.baseUrl + "User/Name";
@@ -39,16 +39,12 @@ export class HttpService {
    return this.http.post<Token>(this.accessTokenUrl, `"${refreshToken}"`);
   }
 
-  getExchangeRates() : Observable<ExchangeRate[]> {
-    return this.http.get<ExchangeRate[]>(this.exchangeRatesUrl);   
-  }
-
   getCurrencies() : Observable<string[]> {
     return this.http.get<string[]>(this.currenciesUrl);  
   }
 
-  getEarnings() : Observable<Earning[]> {
-    return this.http.get<Earning[]>(this.earningsUrl)
+  getEarnings() : Observable<Operation[]> {
+    return this.http.get<Operation[]>(this.earningsUrl)
   }
 
   deleteEarning(earningId: number) {
@@ -61,6 +57,22 @@ export class HttpService {
 
   addEarning(body: string) {
     return this.http.post(this.earningsUrl, body);
+  }
+
+  getExpenses() : Observable<Operation[]> {
+    return this.http.get<Operation[]>(this.expensesUrl)
+  }
+
+  deleteExpense(expenseId: number) {
+    return this.http.delete(this.expensesUrl, { body: `"${expenseId}"` });
+  }
+
+  getExpenseCategories() : Observable<string[]> {
+    return this.http.get<string[]>(this.expenseCategoriesUrl);
+  }
+
+  addExpense(body: string) {
+    return this.http.post(this.expensesUrl, body);
   }
 
   connectUser() {

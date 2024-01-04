@@ -2,6 +2,6 @@
 {
     public class EarningRequest
     {
-        public Earning[] Earnings { get; set; }
+        public Operation[] Earnings { get; set; }
     }
 }

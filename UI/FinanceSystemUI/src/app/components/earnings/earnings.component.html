@@ -1,66 +1,120 @@
 <div class="container">
     <div class="content">
         <div class="content-left">
-            <h3>Ostatnie wpływy</h3>
-            <button (click)="openModal()">+<br/>Dodaj</button>
-            <button (click)="LetDeleteRows()">-<br/>{{editRowsEnabled === false ? "Usuń" : "Zakończ"}}</button>
-            <div class="filters">
-                <input type="date"
-                    [(ngModel)]="filters.startDate"
-                    name=""
-                    [max]="filters.endDate">
-                <input type="date"
-                    [(ngModel)]="filters.endDate"
-                    name=""
-                    [min]="filters.startDate"> 
-                <select name="" id="" [(ngModel)]="filters.category">
-                    <option *ngFor="let category of categories" [ngValue]="category">{{category}}</option>
-                </select>
-                <input type="number"
-                    [(ngModel)]="filters.minValue"
-                    name=""
-                    min="0"
-                    [max]="filters.maxValue"> 
-                <input type="number"
-                    [(ngModel)]="filters.maxValue"
-                    name=""
-                    [min]="filters.minValue"> 
-    
-                <input type="number"
-                    [(ngModel)]="filters.numberOfItems"
-                    name=""> 
+            <div class="content-left-row">
+                <div class="earnings-edit" (click)="openModal()">
+                    <img class="earnings-edit-image" src="..\..\assets\user-layout\add.png"/>
+                    <button class="earnings-edit-button">Dodaj</button>
+                </div>
+                <div class="earnings-edit" (click)="LetDeleteRows()">
+                    <img class="earnings-edit-image" src="..\..\assets\user-layout\delete.png"/>
+                    <button class="earnings-edit-button">{{editRowsEnabled === false ? "Usuń" : "Zakończ"}}</button>
+                </div>
+            </div>   
+            <div class="content-left-row">
+                <h2>Filtry <img class="filters-image" src="..\..\assets\user-layout\filters.png"/></h2>
 
-                <select name="" id="" [(ngModel)]="exchangeRateSelected">
-                    <option *ngFor="let er of exchangeRates" [ngValue]="er.currencyCode">{{er.currencyCode}}</option>
-                </select>
-    
-                <button (click)="filterEarnings()">Filtruj</button>
+                <div class="filters">
+                    <div class="filter-item">
+                        <input type="date"
+                            [(ngModel)]="filters.startDate"
+                            name=""
+                            [max]="filters.endDate"
+                            class="filters-input">
+                        
+                        <label class="filter-label">Data od</label>
+                    </div>
+
+                    <div class="filter-item">
+                        <input type="date"
+                            [(ngModel)]="filters.endDate"
+                            name=""
+                            [min]="filters.startDate"
+                            [max]="todayDate"
+                            class="filters-input"> 
+                        
+                        <label class="filter-label">Data do</label>
+                    </div>
+
+                    <div class="filter-item">
+                        <select name="" class="filters-input" [(ngModel)]="filters.category">
+                            <option class="select-option" value="all">Wszystkie</option>
+                            <option class="select-option" *ngFor="let category of categories" [ngValue]="category">{{category}}</option>
+                        </select>
+
+                        <label class="filter-label">Kategoria</label>
+                    </div>
+
+                    <div class="filter-item">
+                        <input type="text"
+                            inputmode="numeric"
+                            [(ngModel)]="filters.minValue"
+                            name=""
+                            min="0"
+                            [max]="filters.maxValue"
+                            class="filters-input"> 
+
+                        <label class="filter-label">Wartość od</label>
+                    </div>
+                    
+                    <div class="filter-item">
+                        <input type="text"
+                            inputmode="numeric"
+                            [(ngModel)]="filters.maxValue"
+                            name=""
+                            [min]="filters.minValue"
+                            class="filters-input"> 
+
+                        <label class="filter-label">Wartość do</label>
+                    </div>
+
+                    <div class="filter-item">
+                        <select name="" class="filters-input" [(ngModel)]="filters.currency">
+                            <option class="select-option" value="all">Wszystkie</option>
+                            <option class="select-option" *ngFor="let c of currencies" [ngValue]="c">{{c}}</option>
+                        </select>
+
+                        <label class="filter-label">Waluta</label>
+                    </div>      
+                </div>
+
+                <button class="earnings-edit-button" (click)="filterEarnings()">Filtruj</button>                
             </div>
     
             <div class="earnings-grid">
                 <div class="earnings-grid-row">
-                    <h4 *ngFor="let header of listHeadersShort" (click)="changeSortColumn(header)">
+                    <h4 *ngFor="let header of sortingService.listHeadersShort" (click)="sortByColumn(header)">
                         {{header.name}}
                         <span *ngIf="header.arrowDirection == -1">&darr;</span>
                         <span *ngIf="header.arrowDirection == 1">&uarr;</span>
                     </h4>
                 </div>
                 
-                <div class="earnings-grid-row" *ngFor="let e of earningsToShow; index as i">
+                <div class="earnings-grid-row" *ngFor="let e of earnings; index as i">
                     <span class="delete-row" *ngIf="deleteRowEnabled(i)" (click)="deleteRow(i)">X</span>
-                    <span>{{e.username}}</span>
+                    <span class="earning-grid-item-username">{{e.username}}</span>
                     <span>{{e.date | date : undefined : undefined : "pl-PL"}}</span>
                     <span>{{e.category}}</span>
                     <span>{{e.value}} {{e.currencyCode}}</span>
-                    <button class="btn-more" (click)="showEarningDetails(e)">...</button>
+                    <img class="earning-grid-item-dots" src="..\..\assets\user-layout\dots.png" (click)="showEarningDetails(e)">
                 </div>
             </div>
         </div>
     
         <div class="content-right">
-            <div class="chart" [chart]="earningHistoryChart"></div>
-            <div class="chart" [chart]="earningsByCategoryChart"></div>
-            Saldo: {{totalValue}}
+            <div class="chart-wrapper">
+                <div [ngClass]="leftLineChartEnabled ? 'chart-visible' : 'chart-invisible'" [chart]="earningsByDaysChart"></div>
+                <div [ngClass]="!leftLineChartEnabled ? 'chart-visible' : 'chart-invisible'" [chart]="earningsByMonthsChart"></div>
+                <span [ngClass]="leftLineChartEnabled ? 'change-chart-active' : 'change-chart-inactive'" (click)="changeLineChart('left')">&#9679;</span>
+                <span [ngClass]="!leftLineChartEnabled ? 'change-chart-active' : 'change-chart-inactive'" (click)="changeLineChart('right')">&#9679;</span>
+            </div>
+            
+            <div class="chart-wrapper">
+                <div [ngClass]="leftPieChartEnabled ? 'chart-visible' : 'chart-invisible'" [chart]="earningsByCategoryChart"></div>
+                <div [ngClass]="!leftPieChartEnabled ? 'chart-visible' : 'chart-invisible'" [chart]="earningsByUserChart"></div>
+                <span [ngClass]="leftPieChartEnabled ? 'change-chart-active' : 'change-chart-inactive'" (click)="changePieChart('left')">&#9679;</span>
+                <span [ngClass]="!leftPieChartEnabled ? 'change-chart-active' : 'change-chart-inactive'" (click)="changePieChart('right')">&#9679;</span>
+            </div>
         </div>
     </div>    
 </div>
@@ -71,11 +125,12 @@
 <div class="earnings-inputs-modal" *ngIf="!inputModalDisabled">
     <div class="close-modal" (click)="closeModal()">X</div>
     <div class="input-item-modal">
-        <h4 *ngFor="let header of listHeaders.slice(1, listHeaders.length-1)">{{header.name}}</h4>
+        <h4 *ngFor="let header of sortingService.listHeaders.slice(1, sortingService.listHeaders.length-1)">{{header.name}}</h4>
     </div>
     <div class="input-item-modal" *ngFor="let earning of earningsInput; index as i; trackBy: trackByFn">
         <input type="date"
             [(ngModel)]="earningsInput[i].date"
+            [max]="todayDate"
             (ngModelChange)="onChange($event)"
             name="dates{{i}}">                    
 
@@ -99,9 +154,9 @@
 
         <select id="" [(ngModel)]='earningsInput[i].currencyCode' (ngModelChange)="onChange($event)">
             <option
-                *ngFor="let er of exchangeRates; let i = index"     
-                [ngValue]="er.currencyCode">
-                {{er.currencyCode}}
+                *ngFor="let c of currencies; let i = index"     
+                [ngValue]="c">
+                {{c}}
             </option>
         </select>
     </div>  
@@ -119,7 +174,7 @@
 <div class="earnings-inputs-modal" *ngIf="!earningDetailsModalDisabled">
     <div class="close-modal" (click)="closeModal()">X</div>
     <div class="input-item-modal">
-        <h4 *ngFor="let header of listHeaders">{{header.name}}</h4>
+        <h4 *ngFor="let header of sortingService.listHeaders">{{header.name}}</h4>
     </div>
     <div class="input-item-modal">
         <span>{{earningSelected!.username}}</span>

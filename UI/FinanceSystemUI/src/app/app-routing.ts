@@ -3,25 +3,13 @@ import { CommonModule, } from '@angular/common';
 import { Routes, RouterModule, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { UserLayoutComponent } from './layouts/user-layout/user-layout.component';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
-import { AuthService } from './services/AuthService/auth.service';
+import { authenticatedGuard, notAuthenticatedGuard } from './authGuards/loginGuard';
 
 const routes: Routes = [
   {
     path: 'authentication',
     component: AuthLayoutComponent,
-    canActivate: [(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
-      {
-        const authService = inject(AuthService);
-        const router = inject(Router);
-        
-        if (authService.isUserLoggedIn())
-        {
-          window.location.reload();
-        }
-
-        return !authService.isUserLoggedIn();
-      }
-    ], 
+    canActivate: [notAuthenticatedGuard()], 
     children: [
       {
         path: '',
@@ -32,19 +20,7 @@ const routes: Routes = [
   {
     path: 'dashboard',
     component: UserLayoutComponent,
-    canActivate: [(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
-      {
-        const authService = inject(AuthService);
-        const router = inject(Router);
-
-        if (!authService.isUserLoggedIn())
-        {
-          router.navigate(['authentication']);
-        }
-        
-        return authService.isUserLoggedIn();
-      }      
-    ],
+    canActivate: [authenticatedGuard()],
     children: [
       {
         path: '',

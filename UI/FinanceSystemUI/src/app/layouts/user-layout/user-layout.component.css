@@ -32,34 +32,32 @@
     text-align: center;
 }
 
-.navbar a:focus {
-    color: #f6fffa;
-    scale: 1.2;
-}
-
-.navbarItem{
+.navbar-item-active, .navbar-item-inactive {
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.navbarItem:hover {
-    scale: 1.2;
-    /* color: #f6fffa; */
+.navbar-item-active:hover, .navbar-item-inactive:hover {
+    /* scale: 1.2; */
+}
+
+.navbar-item-active {
+    color:#f6fffa;
 }
 
 .navbar-photo {
     width: 40%;
 }
 
-.current-page {
+.page-window {
     position: absolute;
     top: 0;
     left: var(--navbar-width);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
     background-image: url('..\..\..\assets\user-layout\background.jpg');
     background-position: center;
@@ -71,8 +69,59 @@
 }
 
 .info-bar {
+    position: fixed;
+    top: 0;
+    left: var(--navbar-width);
+    width: calc(100vw - var(--navbar-width));
+    height: 15%;
+    display: flex;
+    flex-direction: row;
+    justify-content:center;
+    align-items: center;
+    color:#f6fffa;
+}
+
+.info-bar-content {
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+}
+
+.current-page-name {
+    width: 60%;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 35%;
+}
+
+.profile-info-image {
+    height: 1.8rem;
+    width: auto;
+}
+
+.profile-button {
+    color:#f6fffa;
+    background-color:#63b83f;
+    border: none;
+    border-radius: 0.6rem;
+    font-size: 1.2rem;
+    padding: 0.6rem;
+    width: 40%;
+}
+
+.current-page {
+    position: absolute;
+    top: 10%;
+    left: 0;
+    height: 90%;
     width: 100%;
     display: flex;
-    justify-content:left;
-    text-align: left;
+    justify-content: center;
+    align-items: center;
 }

@@ -23,18 +23,103 @@ h4 {
     position: absolute;
     overflow-y: scroll;
     box-sizing: border-box;
-    width: 95%;
-    height: 94%;
+    width: 90%;
+    height: 90%;
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
     align-items: center;
-    background-color: rgba(59, 59, 59, 0.7);
     border-radius: 1rem;
+    gap: 1rem;
 }
 
 .content-left {
+    background-color: #3b3b3b;
+    border-radius: 2rem;
     width: 60%;
+    height: 100%;
     padding: 2%;
+    box-sizing: border-box;
+    align-items: flex-start;
+}
+
+.content-left-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 1rem;
+    padding: 0.4rem;
+    gap: 1rem;
+}
+
+.content-left-row > h2 {
+    margin: 0;
+}
+
+.content-left-row:nth-of-type(2n) {
+    background-color: #ffffff55;
+    border-radius: 2rem;
+    flex-direction: column;
+}
+
+.earnings-edit {
+    display: flex;
+    align-items: center;
+}
+
+.earnings-edit-image {
+    background-color:#3b3b3b;
+    height: 3rem;
+    width: 3rem;
+    border-radius: 3rem;
+    z-index: 5;
+}
+
+.earnings-edit-button {
+    width: 8vw;
+    text-align: center;
+    background-color: #63b83f;
+    padding: 0.2rem;
+    margin-left: -0.5rem;
+    z-index: 2;
+    border-radius: 0.3em;
+    border: none;
+    font-size: 1.2rem;
+    color:#f6fffa;
+}
+
+.filters-image {
+    height: 1.2rem;
+}
+
+.filters {
+    display: flex;
+    justify-content: space-around;
+    width: 95%;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    width: 15%;
+    text-align: center;
+}
+
+.filters-input {
+    border: 2px solid #f6fffa;
+    color: #f6fffa;
+    border-radius: 1rem;
+    background-color: unset;
+    padding: 0.3rem;
+}
+
+.select-option {
+    background-color: #f6fffa;
+    color:#3b3b3b;
+}
+
+.filter-label {
+    font-size: 0.8rem;
 }
 
 .earnings-button {
@@ -46,13 +131,27 @@ h4 {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    overflow-y: scroll;
+    max-height: 55%;
 }
 
 .earnings-grid-row {
     display: grid;
+    align-items: center;
     grid-template-columns: 22% 22% 22% 22% 12%;
     text-align: center;
     justify-items: center;
+}
+
+.earning-grid-item-username {
+    background-color: #63b83f;
+    color:#f6fffa;
+    width: 70%;
+    border-radius: 0.5rem;
+}
+
+.earning-grid-item-dots {
+    width: 40%;
 }
 
 .btn-more {
@@ -89,6 +188,7 @@ h4 {
     width: 100vw;
     height: 100vh;
     background-color: rgba(89, 89, 89, 0.9);
+    z-index: 10;
 }
 
 .earnings-inputs-modal {
@@ -102,6 +202,7 @@ h4 {
     border-radius: 1rem;
     position: relative;
     top: 2%;
+    z-index: 15;
 }
 
 .close-modal {
@@ -145,23 +246,52 @@ h4 {
     width: 35%;
     height: 100%;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-.chart {
+.chart-wrapper {
     height: 48%;
     max-width: 100%;
-    
+    padding: 2rem 2rem 1rem 2rem;
+    box-sizing: border-box;
+    background-color:#3b3b3b;
+    border-radius: 2rem;
+    text-align: center;
 }
 
-.chart:nth-child(1) {
+.chart-visible {
+    height: 90%;
+}
+
+.chart-invisible {
+    display: none;
+}
+
+.chart-visible:nth-child(1) {
     max-width: 100% !important;
 }
 
-.chart:nth-of-type(1) {
+.chart-visible:nth-of-type(1) {
     top: 0;
 }
 
-.chart:nth-of-type(2) {
+.chart-visible:nth-of-type(2) {
     bottom: 0;
+}
+
+.change-chart-active {
+    color: #63b83f;
+    font-size: 1.5rem;
+}
+
+.change-chart-inactive {
+    color: #979694;
+    font-size: 1.5rem;
+}
+
+.change-chart-active:hover, .change-chart-inactive:hover {
+    cursor: pointer;
 }
 

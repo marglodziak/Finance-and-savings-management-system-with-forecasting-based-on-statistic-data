@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MainSiteComponent } from './main-site.component';
+import { DashboardComponent } from './dashboard.component';
 
 describe('MainSiteComponent', () => {
-  let component: MainSiteComponent;
-  let fixture: ComponentFixture<MainSiteComponent>;
+  let component: DashboardComponent;
+  let fixture: ComponentFixture<DashboardComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [MainSiteComponent]
+      declarations: [DashboardComponent]
     });
-    fixture = TestBed.createComponent(MainSiteComponent);
+    fixture = TestBed.createComponent(DashboardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
