@@ -2,65 +2,105 @@ import { Injectable } from '@angular/core';
 import { Filters } from 'src/app/components/models/filters';
 import { EarningsService } from '../EarningsService/earnings.service';
 import { ExpensesService } from '../ExpensesService/expenses.service';
+import { DateService } from '../DateService/date.service';
+import { Operation } from 'src/app/components/models/operation';
+import { BehaviorSubject } from 'rxjs';
+import { SortingService } from '../SortingService/sorting.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FiltersService {
-  earningsFilters: Filters;
-  expensesFilters: Filters;
+  earningsFilters: Filters = new Filters();
+  expensesFilters: Filters = new Filters();
+  filteredEarnings: Operation[] = [];
+  filteredExpenses: Operation[] = [];
+  earningFiltersChannel: BehaviorSubject<Filters> = new BehaviorSubject(new Filters());
+  expenseFiltersChannel: BehaviorSubject<Filters> = new BehaviorSubject(new Filters());
+  filteredEarningsChannel: BehaviorSubject<Operation[]> = new BehaviorSubject(this.filteredEarnings);
+  filteredExpensesChannel: BehaviorSubject<Operation[]> = new BehaviorSubject(this.filteredExpenses);
   
   constructor(
     private earningsService: EarningsService,
-    private expensesService: ExpensesService
+    private expensesService: ExpensesService,
   ) {
-    this.earningsFilters = this.buildEarningsFilters();
-    this.expensesFilters = this.buildExpensesFilters();
+    this.earningsService.earningsChannel.subscribe(earnings => {
+      this.earningsFilters = this.buildEarningsFilters(earnings);
+      this.earningFiltersChannel.next(this.earningsFilters);
+      this.getFilteredEarnings();
+    });
+    this.expensesService.expensesChannel.subscribe(expenses => {
+      this.expensesFilters = this.buildExpensesFilters(expenses);
+      this.expenseFiltersChannel.next(this.expensesFilters);
+      this.getFilteredExpenses();
+    })
   }
 
-  private buildEarningsFilters() {
+  private buildEarningsFilters(items: Operation[]) {
     var filters = new Filters();
 
-    filters.startDate = this.earningsService.getStartDate();
+    if (items.length == 0) {
+      return filters;
+    }
+
+    filters.startDate = items.reduce(function (a, b) { return new Date(a.date) < new Date(b.date) ? a : b; }).date;
     filters.endDate = this.earningsService.getEndDate();
     filters.maxValue = this.earningsService.getMaxEearningValue();
 
     return filters;
   }
 
-  private buildExpensesFilters() {
+  private buildExpensesFilters(items: Operation[]) {
     var filters = new Filters();
 
-    filters.startDate = this.expensesService.getStartDate();
+    if (items.length == 0) {
+      return filters;
+    }
+
+    filters.startDate = items.reduce(function (a, b) { return new Date(a.date) < new Date(b.date) ? a : b; }).date;
     filters.endDate = this.expensesService.getEndDate();
     filters.maxValue = this.expensesService.getMaxExpenseValue();
 
     return filters;
   }
 
-  async filterEarnings() {
-    let startDate = new Date(this.earningsFilters.startDate + "T00:00:00");
-    let endDate = new Date(this.earningsFilters.endDate + "T00:00:00");
-    let earnings = await this.earningsService.getEarnings();
+  getFilteredEarnings() {
+    let earnings = this.earningsService.earnings;
 
-    return earnings.filter(e => 
-       (startDate <= new Date(e.date) && new Date(e.date) <= endDate)
-    && (this.earningsFilters.category == "all" || this.earningsFilters.category == e.category)
-    && (this.earningsFilters.minValue.toString() != "" ? this.earningsFilters.minValue <= e.value : 0 <= e.value)
-    && (this.earningsFilters.maxValue.toString() != "" ? this.earningsFilters.maxValue >= e.value : e.value < Number.MAX_VALUE)
-    && (this.earningsFilters.currency == "all" || this.earningsFilters.currency == e.currencyCode));
+    if (earnings.length == 0) {
+      return;
+    }
+
+    let filters = this.earningsFilters;
+    this.filteredEarnings = this.filterItems(earnings, filters);
+
+    this.filteredEarningsChannel.next(this.filteredEarnings);
   }
 
-  async filterExpenses() {
-    let startDate = new Date(this.expensesFilters.startDate + "T00:00:00");
-    let endDate = new Date(this.expensesFilters.endDate + "T00:00:00");
-    let expenses = await this.expensesService.getExpenses();
+  getFilteredExpenses() {
+    let expenses = this.expensesService.expenses;
 
-    return expenses.filter(e => 
-       (startDate <= new Date(e.date) && new Date(e.date) <= endDate)
-    && (this.expensesFilters.category == "all" || this.expensesFilters.category == e.category)
-    && (this.expensesFilters.minValue.toString() != "" ? this.expensesFilters.minValue <= e.value : 0 <= e.value)
-    && (this.expensesFilters.maxValue.toString() != "" ? this.expensesFilters.maxValue >= e.value : e.value < Number.MAX_VALUE)
-    && (this.expensesFilters.currency == "all" || this.expensesFilters.currency == e.currencyCode));
+    if (expenses.length == 0) {
+      return;
+    }
+
+    let filters = this.expensesFilters;
+    this.filteredExpenses = this.filterItems(expenses, filters);
+
+    this.filteredExpensesChannel.next(this.filteredExpenses);
+  }
+
+  filterItems(items: Operation[], filters: Filters) {
+    let startDate = new Date(filters.startDate);
+    let endDate = new Date(filters.endDate);
+
+    let result = items.filter(i => 
+       (startDate <= new Date(i.date) && new Date(i.date) <= endDate)
+    && (filters.category == "all" || filters.category == i.category)
+    && (filters.minValue.toString() != "" ? filters.minValue <= i.value : 0 <= i.value)
+    && (filters.maxValue.toString() != "" ? filters.maxValue >= i.value : i.value < Number.MAX_VALUE)
+    && (filters.currency == "all" || filters.currency == i.currencyCode));
+
+    return result;
   }
 }

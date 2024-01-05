@@ -135,12 +135,19 @@ h4 {
     max-height: 55%;
 }
 
-.earnings-grid-row {
+.earnings-grid-row, .earnings-grid-row-with-delete {
     display: grid;
     align-items: center;
-    grid-template-columns: 22% 22% 22% 22% 12%;
     text-align: center;
     justify-items: center;
+}
+
+.earnings-grid-row{
+    grid-template-columns: 22% 22% 22% 22% 12%;
+}
+
+.earnings-grid-row-with-delete {
+    grid-template-columns: 4% 21% 21% 21% 21% 12%;
 }
 
 .earning-grid-item-username {
@@ -164,8 +171,8 @@ h4 {
 }
 
 .delete-row {
-    position: absolute;
     min-width: unset !important;
+    width: 5%;
     color: #bb0000;
     font-weight: bold;
     text-align: right !important;

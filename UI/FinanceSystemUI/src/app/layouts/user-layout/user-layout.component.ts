@@ -10,8 +10,10 @@ import { ExpensesService } from 'src/app/services/ExpensesService/expenses.servi
   templateUrl: './user-layout.component.html',
   styleUrls: ['./user-layout.component.css']
 })
-export class UserLayoutComponent implements OnInit, OnChanges {
-  total: number = 0;
+export class UserLayoutComponent {
+  total: string = "";
+  totalEarnings: number = 0;
+  totalExpenses: number = 0;
   routes: NavbarItem[] = [
     new NavbarItem("Dzień dobry!", "..\\..\\assets\\user-layout\\logo.png", "/"),
     new NavbarItem("Wpływy", "..\\..\\assets\\user-layout\\earnings.png", "earnings"),
@@ -26,29 +28,24 @@ export class UserLayoutComponent implements OnInit, OnChanges {
     private authService: AuthService,
     private earningsService: EarningsService,
     private expensesService: ExpensesService
-  ) { }
-
-  async ngOnInit(): Promise<void> {
+  ) {
     this.routes.forEach(r => {
       if (this.router.url.endsWith(r.routerLink)) {
         this.currentTab = r;
         this.routes.forEach(r => r.isActive = false);
         this.currentTab.isActive = true;
       }
+
+      this.earningsService.getEarnings();
+      this.expensesService.getExpenses();
     });
 
-    this.total = await this.calculateTotal();
-    this.earningsService.testing.subscribe(t => this.total = t);
-  }
-
-  private async calculateTotal() {
-    let earnings = await this.earningsService.sumEarnings();
-    let expenses = await this.expensesService.sumExpenses();
-
-    return parseFloat((earnings - expenses).toFixed(2));
-  }
-
-  ngOnChanges(): void {
+    this.earningsService.earningsChannel.subscribe(e => {
+      this.totalEarnings = e.map(el => el.currentValueInPLN).reduce((a,b) => {return a+b}, 0);
+    });
+    this.expensesService.expensesChannel.subscribe(e => {
+      this.totalExpenses = e.map(el => el.currentValueInPLN).reduce((a,b) => {return a+b}, 0);
+    });
   }
 
   tabChanged(tab: NavbarItem) {

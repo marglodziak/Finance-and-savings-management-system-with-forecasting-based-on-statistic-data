@@ -3,6 +3,9 @@ import { Chart } from 'angular-highcharts';
 import { DateService } from '../DateService/date.service';
 import { Operation } from 'src/app/components/models/operation';
 import { FiltersService } from '../FiltersService/filters.service';
+import { ExpensesService } from '../ExpensesService/expenses.service';
+import { BehaviorSubject } from 'rxjs';
+import { EarningsService } from '../EarningsService/earnings.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,23 +16,44 @@ export class ChartService {
   baseColorG: number;
   baseColorB: number;
 
-  earningsByDaysChart: Chart = new Chart();
-  earningsByMonthsChart: Chart = new Chart();
-  earningsByCategoryChart: Chart = new Chart();
-  earningsByUserChart: Chart = new Chart();
+  earningsByDaysChannel: BehaviorSubject<Chart> = new BehaviorSubject(new Chart);
+  earningsByMonthsChannel: BehaviorSubject<Chart> = new BehaviorSubject(new Chart);
+  earningsByCategoryChannel: BehaviorSubject<Chart> = new BehaviorSubject(new Chart);
+  earningsByUserChannel: BehaviorSubject<Chart> = new BehaviorSubject(new Chart);
 
-  expensesByDaysChart: Chart = new Chart();
-  expensesByMonthsChart: Chart = new Chart();
-  expensesByCategoryChart: Chart = new Chart();
-  expensesByUserChart: Chart = new Chart();
+  expensesByDaysChannel: BehaviorSubject<Chart> = new BehaviorSubject(new Chart);
+  expensesByMonthsChannel: BehaviorSubject<Chart> = new BehaviorSubject(new Chart);
+  expensesByCategoryChannel: BehaviorSubject<Chart> = new BehaviorSubject(new Chart);
+  expensesByUserChannel: BehaviorSubject<Chart> = new BehaviorSubject(new Chart);
+
+  earnings: Operation[] = [];
+  expenses: Operation[] = [];
+  totalEarnings: Operation[] = [];
+  totalExpenses: Operation[] = [];
+
   
   constructor(
     private dateService: DateService,
-    private filtersService: FiltersService
+    private filtersService: FiltersService,
+    private earningsService: EarningsService,
+    private expensesService: ExpensesService,
   ) {
     this.baseColorR = parseInt(this.baseCategoryColor.substring(1, 3), 16);
     this.baseColorG = parseInt(this.baseCategoryColor.substring(3, 5), 16);
     this.baseColorB = parseInt(this.baseCategoryColor.substring(5), 16);
+
+    this.filtersService.filteredEarningsChannel.subscribe(e => {
+      this.earnings = JSON.parse(JSON.stringify(e));
+      this.updateEarningsCharts(this.earnings, this.totalEarnings);
+    })
+
+    this.filtersService.filteredExpensesChannel.subscribe(e => {
+      this.expenses = JSON.parse(JSON.stringify(e));
+      this.updateExpensesCharts(this.expenses, this.totalExpenses);
+    })
+    
+    this.earningsService.earningsChannel.subscribe(e => this.totalEarnings = JSON.parse(JSON.stringify(e)));
+    this.expensesService.expensesChannel.subscribe(e => this.totalExpenses = JSON.parse(JSON.stringify(e)));
   }
 
   //#region Logic
@@ -44,10 +68,15 @@ export class ChartService {
     let earningsByCategory = this.CalculateEarningsByCategory(earnings);
     let earningsByUser = this.CalculateEarningsByUser(earnings);
 
-    this.earningsByDaysChart = this.GenerateLineChart(dates.map(c => c.toLocaleDateString()), earningValues);
-    this.earningsByMonthsChart = this.GenerateBarChart(months.map(m => m.substring(0, 3) + m.substring(5)), selectedEarningsByMonths, totalEarningsByMonths);
-    this.earningsByCategoryChart = this.GeneratePieChart(earningsByCategory);
-    this.earningsByUserChart = this.GeneratePieChart(earningsByUser);
+    let earningsByDaysChart = this.GenerateLineChart(dates.map(c => c.toLocaleDateString()), earningValues);
+    let earningsByMonthsChart = this.GenerateBarChart(months.map(m => m.substring(0, 3) + m.substring(5)), selectedEarningsByMonths, totalEarningsByMonths);
+    let earningsByCategoryChart = this.GeneratePieChart(earningsByCategory);
+    let earningsByUserChart = this.GeneratePieChart(earningsByUser);
+
+    this.earningsByDaysChannel.next(earningsByDaysChart);
+    this.earningsByMonthsChannel.next(earningsByMonthsChart);
+    this.earningsByCategoryChannel.next(earningsByCategoryChart);
+    this.earningsByUserChannel.next(earningsByUserChart);
   }
 
   updateExpensesCharts(expenses: Operation[], totalExpenses: Operation[]) {
@@ -60,10 +89,15 @@ export class ChartService {
     let earningsByCategory = this.CalculateEarningsByCategory(expenses);
     let earningsByUser = this.CalculateEarningsByUser(expenses);
 
-    this.expensesByDaysChart = this.GenerateLineChart(dates.map(c => c.toLocaleDateString()), earningValues);
-    this.expensesByMonthsChart = this.GenerateBarChart(months.map(m => m.substring(0, 3) + m.substring(5)), selectedEarningsByMonths, totalEarningsByMonths);
-    this.expensesByCategoryChart = this.GeneratePieChart(earningsByCategory);
-    this.expensesByUserChart = this.GeneratePieChart(earningsByUser);
+    let expensesByDaysChart = this.GenerateLineChart(dates.map(c => c.toLocaleDateString()), earningValues);
+    let expensesByMonthsChart = this.GenerateBarChart(months.map(m => m.substring(0, 3) + m.substring(5)), selectedEarningsByMonths, totalEarningsByMonths);
+    let expensesByCategoryChart = this.GeneratePieChart(earningsByCategory);
+    let expensesByUserChart = this.GeneratePieChart(earningsByUser);
+
+    this.expensesByDaysChannel.next(expensesByDaysChart);
+    this.expensesByMonthsChannel.next(expensesByMonthsChart);
+    this.expensesByCategoryChannel.next(expensesByCategoryChart);
+    this.expensesByUserChannel.next(expensesByUserChart);
   }
 
   FormatEarningValuesInTime(dates: Date[], earnings: Operation[]) {

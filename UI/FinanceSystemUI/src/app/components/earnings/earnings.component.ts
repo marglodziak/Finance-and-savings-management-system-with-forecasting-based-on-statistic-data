@@ -16,7 +16,7 @@ import { EarningsService } from 'src/app/services/EarningsService/earnings.servi
   templateUrl: './earnings.component.html',
   styleUrls: ['./earnings.component.css']
 })
-export class EarningsComponent implements OnInit{
+export class EarningsComponent{
   earnings: Operation[] = [];
   totalEarnings: Operation[] = [];
   categories: string[] = [];
@@ -43,7 +43,6 @@ export class EarningsComponent implements OnInit{
   sortingService: SortingService;
 
   constructor(
-    private httpService:HttpService,
     private chartService: ChartService,
     private dateService: DateService,
     private filtersService: FiltersService,
@@ -53,25 +52,21 @@ export class EarningsComponent implements OnInit{
   {
     this.sortingService = sortingService;
     this.todayDate = this.dateService.FormatDateToLocale(new Date());
-  }
+    this.earningsService.earningsChannel.subscribe(e => this.totalEarnings = e);
+    this.earningsService.categoriesChannel.subscribe(c => this.categories = c);
+    this.currenciesService.currenciesChannel.subscribe(c => this.currencies = c);
+    this.filtersService.earningFiltersChannel.subscribe(f => this.filters = f);
+    this.filtersService.filteredEarningsChannel.subscribe(e => this.earnings = e);
+    
+    this.chartService.earningsByDaysChannel.subscribe(c => this.earningsByDaysChart = c);
+    this.chartService.earningsByMonthsChannel.subscribe(c => this.earningsByMonthsChart = c);
+    this.chartService.earningsByCategoryChannel.subscribe(c => this.earningsByCategoryChart = c);
+    this.chartService.earningsByUserChannel.subscribe(c => this.earningsByUserChart = c);
 
-  async ngOnInit(): Promise<void> {
-    this.earnings = await this.earningsService.getEarnings();
-    this.totalEarnings = await this.earningsService.getEarnings();
-    this.categories = await this.earningsService.getCategories();
-    this.currencies = this.currenciesService.currencies;
-    this.filters = this.filtersService.earningsFilters;
-    this.updateCharts();
-    this.sortingService.sortByDate(this.earnings);
-
-  }
-
-  private updateCharts() {
-    this.chartService.updateEarningsCharts(this.earnings, this.totalEarnings);
-    this.earningsByDaysChart = this.chartService.earningsByDaysChart;
-    this.earningsByMonthsChart = this.chartService.earningsByMonthsChart;
-    this.earningsByCategoryChart = this.chartService.earningsByCategoryChart;
-    this.earningsByUserChart = this.chartService.earningsByUserChart;
+    this.earningsService.getEarnings();
+    this.earningsService.getCategories();
+    this.currenciesService.getCurrencies();
+    this.filtersService.getFilteredEarnings();
   }
 
   trackByFn(index: any) {
@@ -82,9 +77,8 @@ export class EarningsComponent implements OnInit{
     this.sortingService.sortItems(header, this.earnings);
   }
 
-  async filterEarnings() {
-    this.earnings = await this.filtersService.filterEarnings();
-    this.updateCharts();
+  filterEarnings() {
+    this.filtersService.getFilteredEarnings();
   }
   
   onChange(value: any)
@@ -121,9 +115,8 @@ export class EarningsComponent implements OnInit{
       return;
     }
 
-    this.earnings = await this.earningsService.addEarnings(this.earningsInput);
+    this.earningsService.addEarnings(this.earningsInput);
     this.closeModal();
-    this.updateCharts();
   }
 
   IsInputValid() {
@@ -134,11 +127,6 @@ export class EarningsComponent implements OnInit{
     });
 
     return invalidItems.length == 0;
-  }
-
-  private ResetInput()
-  {
-    this.earningsInput = [this.CreateInputRow()];
   }
 
   private CreateInputRow()
@@ -164,8 +152,7 @@ export class EarningsComponent implements OnInit{
       return;
     };
 
-    this.earnings = this.earningsService.deleteEarning(this.earnings, index);
-    this.updateCharts();
+    this.earningsService.deleteEarning(this.earnings, index);
   }
 
   changeLineChart(position: string) {

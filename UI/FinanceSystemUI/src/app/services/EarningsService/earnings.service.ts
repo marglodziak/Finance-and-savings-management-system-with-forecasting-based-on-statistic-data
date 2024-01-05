@@ -1,9 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { HttpService } from '../HttpService/http.service';
 import { DateService } from '../DateService/date.service';
 import { Operation } from 'src/app/components/models/operation';
 import { BehaviorSubject, lastValueFrom } from 'rxjs';
-import { SortingService } from '../SortingService/sorting.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,79 +12,81 @@ export class EarningsService {
   private startDateStorageItem: string = 'startDateEarnings';
   private endDateStorageItem: string = 'endDateEarnings';
   private maxEarningValueStorageItem: string = 'maxEarning';
-  total: number = 0;
-  testing: BehaviorSubject<number> = new BehaviorSubject(this.total);
+  earnings: Operation[] = [];
+  earningsChannel: BehaviorSubject<Operation[]> = new BehaviorSubject(this.earnings);
+  categoriesChannel: BehaviorSubject<string[]> = new BehaviorSubject([""]);
 
   constructor(
     private httpService: HttpService,
-    private dateService: DateService,
-    private sortingService: SortingService
+    private dateService: DateService
   ) { }
 
-  async sumEarnings() {
-    let earnings = await this.getEarnings();
-    this.updateTotal(earnings);
-
-    return this.total;
-  }
-
   updateTotal(earnings: Operation[]) {
-    this.total = earnings.map(e => e.currentValueInPLN).reduce((a,b) => { return a + b }, 0);
-    this.testing.next(this.total);
+    // this.earnings = earnings.map(e => e.currentValueInPLN).reduce((a,b) => { return a + b }, 0);
+    this.earningsChannel.next(this.earnings);
   }
 
   async addEarnings(items: Operation[]) {
     this.httpService.addEarning(JSON.stringify(items)).subscribe();
-    let earnings = await lastValueFrom(this.httpService.getEarnings());
-    this.updateEarnings(earnings);
-    this.updateTotal(earnings);
-
-    return earnings;
+    this.httpService.getEarnings().subscribe(e => {
+      this.earnings = e;
+      this.updateEarnings();
+      this.earningsChannel.next(this.earnings);
+    })
   }
 
   async getEarnings() {
     let earnings: Operation[] = JSON.parse(window.sessionStorage.getItem(this.earningsStorageItem)!);
 
     if (earnings != null && earnings.length > 0) {
-      return earnings;
+      this.earnings = earnings;
+      this.earningsChannel.next(this.earnings);
     }
 
-    earnings = await lastValueFrom(this.httpService.getEarnings());
-    this.updateEarnings(earnings);
-
-    return earnings;
+    this.httpService.getEarnings().subscribe(e => {
+      this.earnings = e;
+      this.updateEarnings();
+      this.earningsChannel.next(this.earnings);
+    });
   }
 
-  private updateEarnings(earnings: Operation[]) {
-    if (earnings.length == 0) {
-      return;
+  private updateEarnings() {
+    if (this.earnings.length == 0) {
+      this.clearStorage();
+      return;      
     }
 
-    earnings.forEach(e => e.date = this.dateService.FormatDateToLocale(new Date(e.date)));
+    this.earnings.forEach(e => e.date = this.dateService.FormatDateToLocale(new Date(e.date)));
 
-    let startDate = earnings.reduce(function (a, b) { return new Date(a.date) < new Date(b.date) ? a : b; }).date;
+    let startDate = this.earnings.reduce(function (a, b) { return new Date(a.date) < new Date(b.date) ? a : b; }).date;
     let endDate = new Date();
-    let maxExpense = earnings.reduce((a,b) => a.currentValueInPLN > b.currentValueInPLN ? a : b).currentValueInPLN;
+    let maxEarning = this.earnings.reduce((a,b) => a.currentValueInPLN > b.currentValueInPLN ? a : b).currentValueInPLN;
 
-    window.sessionStorage.setItem(this.earningsStorageItem, JSON.stringify(earnings));
+    window.sessionStorage.setItem(this.earningsStorageItem, JSON.stringify(this.earnings)); 
     window.sessionStorage.setItem(this.startDateStorageItem, startDate);
     window.sessionStorage.setItem(this.endDateStorageItem, this.dateService.FormatDateToLocale(endDate));
-    window.sessionStorage.setItem(this.maxEarningValueStorageItem, maxExpense);
+    window.sessionStorage.setItem(this.maxEarningValueStorageItem, maxEarning);
+  }
+
+  private clearStorage() {
+    window.sessionStorage.setItem(this.earningsStorageItem, "[]");
+    window.sessionStorage.setItem(this.startDateStorageItem, "{}");
+    window.sessionStorage.setItem(this.endDateStorageItem, "{}");
+    window.sessionStorage.setItem(this.maxEarningValueStorageItem, "{}");
   }
 
   deleteEarning(items: Operation[], index: number) {
-    let earningId = items[index].id;
+    this.earnings = items;
+    let earningId = this.earnings[index].id;
     this.httpService.deleteEarning(earningId).subscribe();
 
-    items.splice(index, 1);
-    this.updateEarnings(items);
-    this.updateTotal(items);
-
-    return items;
+    this.earnings.splice(index, 1);
+    this.updateEarnings();
+    this.earningsChannel.next(this.earnings);
   }
 
   async getCategories() {
-    return await lastValueFrom(this.httpService.getEarningCategories());
+    this.httpService.getEarningCategories().subscribe(c => this.categoriesChannel.next(c));
   }
 
   getStartDate() {

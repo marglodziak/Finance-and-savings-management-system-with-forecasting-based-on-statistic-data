@@ -41,7 +41,7 @@ export class SortingService {
     }    
   }
 
-  private sortByHeader(header: ListHeader, items: Operation[]) {
+  private sortByHeader(header: ListHeader, items: Operation[], shouldRevert: boolean = true) {
     switch(header.name) {
       case this.listHeaders[0].name:
         items = items.sort((a,b) => new Date(b.date) > new Date(a.date) ? 1 : -1);
@@ -57,7 +57,7 @@ export class SortingService {
         break;
     }
 
-    if (header.arrowDirection == 1) {
+    if (shouldRevert && header.arrowDirection == 1) {
       items = items.reverse();
     }
 
@@ -65,6 +65,6 @@ export class SortingService {
   }
 
   sortByDate(items: Operation[]) {
-    return this.sortByHeader(this.listHeadersShort[1], items);
+    return this.sortByHeader(this.listHeadersShort[1], items, false);
   }
 }

@@ -54,7 +54,7 @@
                             [max]="filters.maxValue"
                             class="filters-input"> 
 
-                        <label class="filter-label">Wartość od</label>
+                        <label class="filter-label">Wartość od (zł)</label>
                     </div>
                     
                     <div class="filter-item">
@@ -65,7 +65,7 @@
                             [min]="filters.minValue"
                             class="filters-input"> 
 
-                        <label class="filter-label">Wartość do</label>
+                        <label class="filter-label">Wartość do (zł)</label>
                     </div>
 
                     <div class="filter-item">
@@ -82,7 +82,8 @@
             </div>
     
             <div class="earnings-grid">
-                <div class="earnings-grid-row">
+                <div [ngClass]="editRowsEnabled ? 'earnings-grid-row-with-delete' : 'earnings-grid-row'">
+                    <h4 *ngIf="editRowsEnabled"> </h4>
                     <h4 *ngFor="let header of sortingService.listHeadersShort" (click)="sortByColumn(header)">
                         {{header.name}}
                         <span *ngIf="header.arrowDirection == -1">&darr;</span>
@@ -90,8 +91,8 @@
                     </h4>
                 </div>
                 
-                <div class="earnings-grid-row" *ngFor="let e of earnings; index as i">
-                    <span class="delete-row" *ngIf="deleteRowEnabled(i)" (click)="deleteRow(i)">X</span>
+                <div [ngClass]="editRowsEnabled ? 'earnings-grid-row-with-delete' : 'earnings-grid-row'" *ngFor="let e of earnings; index as i">
+                    <span *ngIf="editRowsEnabled" class="delete-row" (click)="deleteRow(i)">{{deleteRowEnabled(i) ? "X" : ""}}</span>
                     <span class="earning-grid-item-username">{{e.username}}</span>
                     <span>{{e.date | date : undefined : undefined : "pl-PL"}}</span>
                     <span>{{e.category}}</span>

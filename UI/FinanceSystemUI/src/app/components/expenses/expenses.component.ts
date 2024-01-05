@@ -16,7 +16,7 @@ import { ListHeader } from '../models/listHeader';
   templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.css']
 })
-export class ExpensesComponent implements OnInit {
+export class ExpensesComponent {
 
   expenses: Operation[] = [];
   totalExpenses: Operation[] = [];
@@ -52,24 +52,21 @@ export class ExpensesComponent implements OnInit {
     sortingService: SortingService)
   {
     this.sortingService = sortingService;
-  }
+    this.expensesService.expensesChannel.subscribe(e => this.totalExpenses = e);
+    this.expensesService.categoriesChannel.subscribe(c => this.categories = c);
+    this.currenciesService.currenciesChannel.subscribe(c => this.currencies = c);
+    this.filtersService.expenseFiltersChannel.subscribe(f => this.filters = f);
+    this.filtersService.filteredExpensesChannel.subscribe(e => this.expenses = e);
+    
+    this.chartService.expensesByDaysChannel.subscribe(c => this.expensesByDaysChart = c);
+    this.chartService.expensesByMonthsChannel.subscribe(c => this.expensesByMonthsChart = c);
+    this.chartService.expensesByCategoryChannel.subscribe(c => this.expensesByCategoryChart = c);
+    this.chartService.expensesByUserChannel.subscribe(c => this.expensesByUserChart = c);
 
-  async ngOnInit(): Promise<void> {
-    this.expenses = await this.expensesService.getExpenses();
-    this.totalExpenses = await this.expensesService.getExpenses();
-    this.categories = await this.expensesService.getCategories();
-    this.currencies = this.currenciesService.currencies;
-    this.filters = this.filtersService.expensesFilters;
-    this.updateCharts();
-    this.sortingService.sortByDate(this.expenses);
-  }
-
-  private updateCharts() {
-    this.chartService.updateExpensesCharts(this.expenses, this.totalExpenses);
-    this.expensesByDaysChart = this.chartService.expensesByDaysChart;
-    this.expensesByMonthsChart = this.chartService.expensesByMonthsChart;
-    this.expensesByCategoryChart = this.chartService.expensesByCategoryChart;
-    this.expensesByUserChart = this.chartService.expensesByUserChart;
+    this.expensesService.getExpenses();
+    this.expensesService.getCategories();
+    this.currenciesService.getCurrencies();
+    this.filtersService.getFilteredExpenses();
   }
 
   trackByFn(index: any) {
@@ -80,9 +77,8 @@ export class ExpensesComponent implements OnInit {
     this.sortingService.sortItems(header, this.expenses);
   }
 
-  async filterExpenses() {
-    this.expenses = await this.filtersService.filterExpenses();
-    this.updateCharts();
+  filterExpenses() {
+    this.filtersService.getFilteredExpenses();
   }
   
   onChange(value: any)
@@ -95,17 +91,15 @@ export class ExpensesComponent implements OnInit {
   }
 
   openModal() {
+    this.earningsInput = [];
     this.addRow();
     this.inputModalDisabled = false;
-    // this.earningsInput = [];
-    // this.addRow();
   }
 
   closeModal() {
     this.inputModalDisabled = true;
     this.earningDetailsModalDisabled = true;
   }
-
 
   addRow()
   {
@@ -117,16 +111,12 @@ export class ExpensesComponent implements OnInit {
   {
     if (!this.IsInputValid())
     {
-      alert("invalid");
+      alert("Podano niepoprawne dane");
       return;
     }
 
-    alert("valid");
-
-    let test = this.httpService.addExpense(JSON.stringify(this.earningsInput)).subscribe();
-    this.earningsReceived = this.earningsReceived.concat(this.earningsInput);
-    // this.ResetInput();
-    // this.sortItems(this.sortingService.listHeaders.find(h => h.arrowDirection != 0)!);
+    this.expensesService.addExpenses(this.earningsInput);
+    this.closeModal();
   }
 
   IsInputValid() {
@@ -137,11 +127,6 @@ export class ExpensesComponent implements OnInit {
     });
 
     return invalidItems.length == 0;
-  }
-
-  private ResetInput()
-  {
-    this.earningsInput = [this.CreateInputRow()];
   }
 
   private CreateInputRow()
@@ -167,8 +152,7 @@ export class ExpensesComponent implements OnInit {
       return;
     };
 
-    let expenseId = this.expenses[index].id;
-    this.httpService.deleteExpense(expenseId).subscribe();
+    this.expensesService.deleteExpense(this.expenses, index);
   }
 
   changeLineChart(position: string) {
@@ -179,4 +163,3 @@ export class ExpensesComponent implements OnInit {
     this.leftPieChartEnabled = position === 'left';
   }
 }
-

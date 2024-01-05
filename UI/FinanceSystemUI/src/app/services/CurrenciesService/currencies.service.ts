@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../HttpService/http.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CurrenciesService {
-  currencies: string[] = []
+  currenciesChannel: BehaviorSubject<string[]> = new BehaviorSubject([""]);
 
-  constructor(private httpService: HttpService) {
-    this.httpService.getCurrencies().subscribe(currencies => this.currencies = currencies);
+  constructor(private httpService: HttpService) { }
+
+  async getCurrencies() {
+    this.httpService.getCurrencies().subscribe(c => this.currenciesChannel.next(c));
   }
 }
