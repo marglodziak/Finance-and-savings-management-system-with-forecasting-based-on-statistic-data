@@ -12,6 +12,14 @@ namespace AppConfig
         public static string ExpirationClaim => GetConfig("ExpirationClaim", true, false);
         public static string UsernameClaim => GetConfig("UsernameClaim", true, false);
         public static string RoleClaim => GetConfig("RoleClaim", true, false);
+        public static string KeyFRED => GetConfig("KeyFRED", true, false);
+        public static string CPIUrl => GetConfig("CPIUrl", true, false);
+        public static string SalaryUrl => GetConfig("SalaryUrl", true, false);
+        public static int MinSeriesLength => Convert.ToInt32(GetConfig("MinSeriesLength", true, false));
+        public static int WindowSize => Convert.ToInt32(GetConfig("WindowSize", true, false));
+        public static int SeriesLength => Convert.ToInt32(GetConfig("SeriesLength", true, false));
+        public static int TrainSize => Convert.ToInt32(GetConfig("TrainSize", true, false));
+        public static int ForecastHorizon => Convert.ToInt32(GetConfig("ForecastHorizon", true, false));
 
         private static string GetConfig(string key, bool throwError, bool isConnString = false)
         {

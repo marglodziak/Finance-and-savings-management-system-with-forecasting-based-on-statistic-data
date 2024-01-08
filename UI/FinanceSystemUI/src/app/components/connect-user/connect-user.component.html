@@ -32,7 +32,7 @@
                         [(ngModel)]="user.connectedUsername"
                         *ngIf="user.isEditable"/>
                     <div class="edits" *ngIf="deleteIAmConnectedToEnabled">
-                        <button (click)="changeUsername(user)">Zmień nazwę</button>
+                        <button (click)="changeUsername(user)">{{user.isEditable ? "Potwierdź" : "Zmień nazwę"}}</button>
                         <span class="delete-row" (click)="deleteUserIAmConnectedTo(i)">X</span>
                     </div>
                     
@@ -57,28 +57,3 @@
         </div>
     </div>    
 </div>
-
-
-
-
-
-<!-- <div class="container">
-    <div class="connect-user-card">
-        <div class="card-item">
-            <h3 class="code-item"> Kod dla innego użytkownika </h3>
-            <button class="code-item" *ngIf="!isCodeGenerated" (click)="generateCode()">WYGENERUJ KOD</button>
-            <span class="code-item" *ngIf="isCodeGenerated">{{connectionCode}}</span>
-        </div>
-        <div class="card-item">
-            <h3 class="code-item"> Wprowadź otrzymany kod </h3>
-            <input
-                type="text"
-                class="code-item"
-                [(ngModel)]="connectionCodeInput"
-                (keyup.enter)="checkCode()"/>
-        </div>
-    </div>
-    <div class="connect-user-card">
-        
-    </div> 
-</div> -->

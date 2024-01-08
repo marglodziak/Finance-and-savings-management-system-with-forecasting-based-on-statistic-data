@@ -67,4 +67,8 @@ export class SortingService {
   sortByDate(items: Operation[]) {
     return this.sortByHeader(this.listHeadersShort[1], items, false);
   }
+
+  sortByDateAsc(items: Operation[]) {
+    return this.sortByDate(items).reverse();
+  }
 }

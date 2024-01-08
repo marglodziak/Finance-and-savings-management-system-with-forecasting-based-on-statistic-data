@@ -1,5 +1,4 @@
 using AppConfig;
-using FinanceSystemAPI.ExceptionFilters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;

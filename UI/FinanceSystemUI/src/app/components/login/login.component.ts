@@ -27,11 +27,14 @@ export class LoginComponent{
       this.validPassword = this.ValidateForm();
       if (this.validPassword)
       {
-        this.httpService.logIn(this.email, this.password).subscribe(response => {
-          this.authService.SaveAccessToken(response.accessToken);
-          this.authService.SaveRefreshToken(response.refreshToken);
+        this.httpService.logIn(this.email, this.password).subscribe({
+          next: val => {
+          this.authService.SaveAccessToken(val.accessToken);
+          this.authService.SaveRefreshToken(val.refreshToken);
           window.location.reload();    
-        });
+        },
+        error: err => alert(err.error)
+      });
       }
 
     }

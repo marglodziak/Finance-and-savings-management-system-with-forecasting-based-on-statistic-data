@@ -1,4 +1,66 @@
 <div class="container">
-    Super test I don't know what to write.
-</div>
+    <div class="content">
+        <div class="content-upper">
+            <div class="content-left">
+                <div class="dashboard-image-wrapper">
+                    <img class="dashboard-image" src="..\..\assets\user-layout\dashboard-image.png">
+                </div>
+                <div class="categories">
+                    <div class="category" *ngFor="let category of categories" (click)="activateCategory(category)">
+                        <span [ngClass]="category.isActive ? 'category-item-active' : 'category-indicator-inactive'" >&#9679;</span>
+                        <span [ngClass]="category.isActive ? 'category-item-active' : 'category-item-inactive'">{{category.name}}</span>
+                    </div>            
+                </div>
+            </div>
 
+            <div class="content-right">
+                <div class="chart-wrapper">
+                    <div [ngClass]="categories[0].isActive ? 'chart-visible' : 'chart-invisible'" [chart]="balanceChart"></div>
+                    <div [ngClass]="categories[1].isActive ? 'chart-visible' : 'chart-invisible'" [chart]="expensesChart"></div>
+                    <div [ngClass]="categories[2].isActive ? 'chart-visible' : 'chart-invisible'" [chart]="earningsChart"></div>
+
+                </div>                
+            </div>
+        </div>        
+
+        <div class="totals">
+            <div class="statistics">
+                <div class="statistics-item statistics-item-wide">
+                    <div class="statistics-item-header">
+                        <span>Suma</span>
+                        <img class="statistics-item-icon" src="..\..\assets\user-layout\sum.png">
+                    </div>
+                    {{selectedCategory.sum}} zł                  
+                </div>
+                <div class="statistics-item">
+                    <div class="statistics-item-header">
+                        <span>Średnia liczba operacji</span>
+                        <img class="statistics-item-icon" src="..\..\assets\user-layout\counter.png">
+                    </div>
+                    {{selectedCategory.averageNumberOfOperations}} 
+                </div>
+                <div class="statistics-item">
+                    <div class="statistics-item-header">
+                        <span>Wartość minimalna</span>
+                        <img class="statistics-item-icon" src="..\..\assets\user-layout\items-min.png">
+                    </div>  
+                    {{selectedCategory.minValue}} zł
+                </div>
+                <div class="statistics-item">
+                    <div class="statistics-item-header">
+                        <span>Wartość średnia</span>
+                        <img class="statistics-item-icon" src="..\..\assets\user-layout\items-average.png">
+                    </div>  
+                    {{selectedCategory.averageValue}} zł
+                </div>
+                <div class="statistics-item">
+                    <div class="statistics-item-header">
+                        <span>Wartość maksymalna</span>
+                        <img class="statistics-item-icon" src="..\..\assets\user-layout\items-max.png">
+                    </div>
+                    {{selectedCategory.maxValue}} zł
+                </div>
+            </div>
+        </div>        
+    </div>    
+</div>

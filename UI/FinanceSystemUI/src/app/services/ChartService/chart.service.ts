@@ -6,6 +6,7 @@ import { FiltersService } from '../FiltersService/filters.service';
 import { ExpensesService } from '../ExpensesService/expenses.service';
 import { BehaviorSubject } from 'rxjs';
 import { EarningsService } from '../EarningsService/earnings.service';
+import { SortingService } from '../SortingService/sorting.service';
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +38,7 @@ export class ChartService {
     private filtersService: FiltersService,
     private earningsService: EarningsService,
     private expensesService: ExpensesService,
+    private sortingService: SortingService
   ) {
     this.baseColorR = parseInt(this.baseCategoryColor.substring(1, 3), 16);
     this.baseColorG = parseInt(this.baseCategoryColor.substring(3, 5), 16);
@@ -57,6 +59,36 @@ export class ChartService {
   }
 
   //#region Logic
+
+  getBalanceHistoryChart(earnings: Operation[], expenses: Operation[]) {
+    let expensesCopy: Operation[] = JSON.parse(JSON.stringify(expenses));
+    expensesCopy.forEach(e => e.currentValueInPLN *= -1);
+
+    let values = earnings.concat(expensesCopy);
+    let valuesSorted = this.sortingService.sortByDateAsc(values);
+    let dates = this.dateService.GetDatesInRange(valuesSorted[0].date, valuesSorted.at(-1)!.date);
+    let history = this.FormatEarningValuesInTime(dates, valuesSorted);
+    
+    return this.GenerateLineChart(dates.map(c => c.toLocaleDateString()), history);
+  }
+
+  getExpensesChart(expenses: Operation[]) {
+    let expensesCopy: Operation[] = JSON.parse(JSON.stringify(expenses));
+    let valuesSorted = this.sortingService.sortByDateAsc(expensesCopy);
+    let dates = this.dateService.GetDatesInRange(valuesSorted[0].date, valuesSorted.at(-1)!.date);
+    let history = this.FormatEarningValuesInTime(dates, valuesSorted);
+    
+    return this.GenerateLineChart(dates.map(c => c.toLocaleDateString()), history);
+  }
+
+  getEarningsChart(expenses: Operation[]) {
+    let earningsCopy: Operation[] = JSON.parse(JSON.stringify(expenses));
+    let valuesSorted = this.sortingService.sortByDateAsc(earningsCopy);
+    let dates = this.dateService.GetDatesInRange(valuesSorted[0].date, valuesSorted.at(-1)!.date);
+    let history = this.FormatEarningValuesInTime(dates, valuesSorted);
+    
+    return this.GenerateLineChart(dates.map(c => c.toLocaleDateString()), history);
+  }
 
   updateEarningsCharts(earnings: Operation[], totalEarnings: Operation[]) {
     let filters = this.filtersService.earningsFilters;
@@ -248,6 +280,60 @@ export class ChartService {
           type: "spline",
           color: "#63b83f",
           data: data
+        }
+      ]
+    })
+  }
+
+  GenerateMultilineChart(categories: string[], data: number[][]) {
+    return new Chart({
+      chart: {
+        type: 'line',
+        backgroundColor: '#3b3b3b'
+      },
+      title: {
+        text: ""
+      },
+      credits: {
+        enabled: false
+      },
+      legend: {
+        itemStyle: {
+          color: '#f6fffa'
+        }
+      },
+      xAxis: {
+        categories: categories,
+        labels: {
+          enabled: false,
+        },
+        lineColor: '#b3b3b3'
+      },
+      yAxis: {
+        title: {
+          text: undefined
+        },
+        labels: {
+          style: {
+            fontSize: '0.6rem',
+            color: '#f6fffa'
+          }
+        },
+        tickAmount: 6,
+        gridLineColor: '#b3b3b3'
+      },
+      series: [
+        {
+          name: "Prognoza",
+          type: "line",
+          color: "#c9fe9f",
+          data: data[1]
+        },
+        {
+          name: "Saldo",
+          type: "line",
+          color: "#63b83f",
+          data: data[0]
         }
       ]
     })

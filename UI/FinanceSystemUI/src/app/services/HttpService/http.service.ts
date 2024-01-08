@@ -4,6 +4,7 @@ import { Token } from '../../components/models/token';
 import { Operation } from '../../components/models/operation';
 import { Observable } from 'rxjs';
 import { ConnectedUser } from 'src/app/components/models/connectedUser';
+import { KeyValue } from '@angular/common';
 
 
 @Injectable({
@@ -24,6 +25,9 @@ export class HttpService {
   private usersConnectedToMeUrl: string = this.baseUrl + "User/ConnectedToMe";
   private changeUsernameUrl: string = this.baseUrl + "User/Name";
   private connectUserCodeUrl: string = this.baseUrl + "User/ConnectionCode";
+  private naiveForecastUrl: string = this.baseUrl + "Forecasts/Naive";
+  private naiveSeasonForecastUrl: string = this.baseUrl + "Forecasts/NaiveWithSeason";
+  private mlForecastUrl: string = this.baseUrl + "Forecasts/ML";
 
   constructor(private http:HttpClient){ }
 
@@ -83,6 +87,10 @@ export class HttpService {
     return this.http.put(this.changeUsernameUrl, { "UserId": userId, "Username": username });
   }
 
+  changeConnectedUsername(username: string) {
+    return this.http.put(this.changeUsernameUrl, { "Username": username });
+  }
+
   checkConnectionCode(connectionCode: string) {
     return this.http.post(this.connectUserCodeUrl, connectionCode);
   }
@@ -101,5 +109,17 @@ export class HttpService {
 
   deleteUserConnectedToMe(email: string) {
     return this.http.delete(this.usersConnectedToMeUrl, { body: `"${email}"` });
+  }
+
+  getNaiveForecast() {
+    return this.http.get<KeyValue<string[], number[][]>>(this.naiveForecastUrl);
+  }
+
+  getNaiveSeasonForecast() {
+    return this.http.get<KeyValue<string[], number[][]>>(this.naiveSeasonForecastUrl);
+  }
+
+  getMLForecast() {
+    return this.http.get<KeyValue<string[], number[][]>>(this.mlForecastUrl);
   }
 }

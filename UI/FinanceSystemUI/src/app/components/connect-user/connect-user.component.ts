@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpService } from 'src/app/services/HttpService/http.service';
 import { ConnectedUser } from '../models/connectedUser';
+import { EarningsService } from 'src/app/services/EarningsService/earnings.service';
+import { ExpensesService } from 'src/app/services/ExpensesService/expenses.service';
 
 @Component({
   selector: 'app-connect-user',
@@ -16,7 +18,11 @@ export class ConnectUserComponent implements OnInit{
   deleteConnectedToMeEnabled: boolean = false;
   deleteIAmConnectedToEnabled: boolean = false;
 
-  constructor(private httpService:HttpService) { }
+  constructor(
+    private httpService:HttpService,
+    private earningsService: EarningsService,
+    private expensesService: ExpensesService
+  ) { }
 
   ngOnInit(): void {
     this.httpService.getUsersIAmConnectedTo().subscribe(response => this.usersIAmConnectedTo = response);
@@ -34,15 +40,22 @@ export class ConnectUserComponent implements OnInit{
     this.httpService.checkConnectionCode(this.connectionCodeInput).subscribe({
       next: userId => {
         var name = prompt("Podaj własną nazwę dla użytkownika");
-        this.httpService.setConnectedUsername(Number(userId), name!).subscribe();
+        this.httpService.setConnectedUsername(Number(userId), name!).subscribe(_ =>
+          this.httpService.getUsersIAmConnectedTo().subscribe(response => this.usersIAmConnectedTo = response))
+        this.earningsService.earnings = [];
+        this.expensesService.expenses = [];
       },
-      error: err => alert(err.error),
-      complete: () => alert("Skonczone")
+      error: err => alert(err.error)
     })
   }
 
   changeUsername(user: ConnectedUser) {
     user.isEditable = !user.isEditable;
+
+    if (user.isEditable == false)
+    {
+      this.httpService.setConnectedUsername(Number(user.userConnectedToId), user.connectedUsername).subscribe();
+    }
   }
 
   deleteUserIAmConnectedTo(i: number) {

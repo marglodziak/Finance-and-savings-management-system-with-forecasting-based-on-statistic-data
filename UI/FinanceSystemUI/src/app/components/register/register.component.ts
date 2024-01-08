@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { HttpService } from 'src/app/services/HttpService/http.service';
 
 @Component({
@@ -17,14 +18,20 @@ export class RegisterComponent {
     errorMsgPasswordRepeated: string = "";
     test: string = "";
 
-    constructor(private httpService:HttpService) { }
+    constructor(private httpService:HttpService, private router:Router) { }
 
     onSubmit()
     {
       this.validPassword = this.ValidateForm();
       if (this.validPassword)
       {
-        this.httpService.registerNewUser(this.email, this.password).subscribe();
+        this.httpService.registerNewUser(this.email, this.password).subscribe({
+          next: value => {
+            alert("Stworzenie Twojego konta przebiegło poprawnie. Możesz się zalogować.");
+            this.router.navigate(['login']);
+          },
+          error: err => alert(`Błąd podczas rejestracji: ${err.error}. Spróbuj ponownie.`)
+        });
       }
     }
 

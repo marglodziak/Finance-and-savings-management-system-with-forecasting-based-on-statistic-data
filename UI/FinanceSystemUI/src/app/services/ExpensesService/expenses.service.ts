@@ -22,12 +22,13 @@ export class ExpensesService {
   ) { }
 
   addExpenses(items: Operation[]) {
-    this.httpService.addExpense(JSON.stringify(items)).subscribe();
-    this.httpService.getExpenses().subscribe(e => {
-      this.expenses = e;
-      this.updateExpenses();
-      this.expensesChannel.next(this.expenses);
-    })
+    this.httpService.addExpense(JSON.stringify(items)).subscribe(_ =>
+      this.httpService.getExpenses().subscribe(e => {
+        this.expenses = e;
+        this.updateExpenses();
+        this.expensesChannel.next(this.expenses);
+      }
+    ));
   }
 
   async getExpenses() {

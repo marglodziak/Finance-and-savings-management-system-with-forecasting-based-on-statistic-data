@@ -273,5 +273,25 @@ namespace FinanceSystemAPI.DAL
                 new SqlParameter("@p_UserId", userId)
             });
         }
+
+        public IEnumerable<OperationByMonth> GetUserEarningsByMonth(int userId)
+        {
+            var result = ExecuteProcedure("[dbo].[usp_Earnings_Select_ByMonth]", new SqlParameter[]
+            {
+                    new SqlParameter("@p_UserId", userId)
+            });
+
+            return ConvertDataTable<OperationByMonth>(result.ReturnedData);
+        }
+
+        public IEnumerable<OperationByMonth> GetUserExpensesByMonth(int userId)
+        {
+            var result = ExecuteProcedure("[dbo].[usp_Expenses_Select_ByMonth]", new SqlParameter[]
+            {
+                    new SqlParameter("@p_UserId", userId)
+            });
+
+            return ConvertDataTable<OperationByMonth>(result.ReturnedData);
+        }
     }
 }

@@ -1,0 +1,18 @@
+<div class="container">
+    <div class="content">
+        <div class="content-upper">
+            <h2>Wybierz metodę prognozy salda</h2>
+            <div class="forecast-methods">
+                <button class="forecast-item" (click)="getNaiveForecast()">NAIWNA</button>
+                <button class="forecast-item" (click)="getNaiveForecastWithSeasoning()">NAIWNA Z SEZONOWOŚCIĄ</button>
+                <button class="forecast-item" (click)="getMLForecast()">UCZENIE MASZYNOWE</button>
+            </div>
+        </div>        
+
+        <div class="chart-wrapper">
+            <div [ngClass]="chartsEnabled[0] ? 'chart-visible' : 'chart-invisible'" [chart]="naiveChart"></div>
+            <div [ngClass]="chartsEnabled[1] ? 'chart-visible' : 'chart-invisible'" [chart]="naiveSeasonChart"></div>
+            <div [ngClass]="chartsEnabled[2] ? 'chart-visible' : 'chart-invisible'" [chart]="MLChart"></div>
+        </div>         
+    </div>    
+</div>

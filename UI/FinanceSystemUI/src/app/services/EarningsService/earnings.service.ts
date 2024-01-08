@@ -27,12 +27,13 @@ export class EarningsService {
   }
 
   async addEarnings(items: Operation[]) {
-    this.httpService.addEarning(JSON.stringify(items)).subscribe();
-    this.httpService.getEarnings().subscribe(e => {
-      this.earnings = e;
-      this.updateEarnings();
-      this.earningsChannel.next(this.earnings);
-    })
+    this.httpService.addEarning(JSON.stringify(items)).subscribe(_ =>
+      this.httpService.getEarnings().subscribe(e => {
+        this.earnings = e;
+        this.updateEarnings();
+        this.earningsChannel.next(this.earnings);
+      })
+    );
   }
 
   async getEarnings() {

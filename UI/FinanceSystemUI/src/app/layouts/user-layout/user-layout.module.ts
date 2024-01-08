@@ -8,7 +8,7 @@ import { UserLayoutRoutes } from './user-layout.routing';
 import { DashboardComponent } from '../../components/dashboard/dashboard.component';
 import { ConnectUserComponent } from '../../components/connect-user/connect-user.component';
 import { EarningsComponent } from 'src/app/components/earnings/earnings.component';
-import { SavingsComponent } from 'src/app/components/savings/savings.component';
+import { ForecastsComponent } from 'src/app/components/forecasts/forecasts.component';
 import { ExpensesComponent } from 'src/app/components/expenses/expenses.component';
 import { HistoryComponent } from 'src/app/components/history/history.component';
 
@@ -17,7 +17,7 @@ import { HistoryComponent } from 'src/app/components/history/history.component';
     DashboardComponent,
     ConnectUserComponent,
     EarningsComponent,
-    SavingsComponent,
+    ForecastsComponent,
     ExpensesComponent,
     HistoryComponent
   ],

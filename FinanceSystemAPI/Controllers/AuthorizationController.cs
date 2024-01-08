@@ -22,16 +22,24 @@ namespace FinanceSystemAPI.Controllers
         [Route("Register")]
         public IActionResult RegisterUser(Credentials credentials)
         {
+            var dal = new DataAccessLayer();
+            var user = dal.GetUserDetails(credentials.Email);
+
+            if (user is not null)
+            {
+                return BadRequest($"podany adres e-mail jest ju¿ zajêty");
+            }
+
             (string hashedPassword, string salt) = new PasswordHasher().HashPassword(credentials.Password);
             var pwd = new PasswordHasher().HashPassword(credentials.Password, salt);
             var result = new DataAccessLayer().RegisterUser(credentials.Email, hashedPassword, salt);
 
             if (result.IsSuccessful)
             {
-                return Ok("U¿ytkownik zarejestrowany poprawnie.");
+                return Ok();
             }
 
-            return BadRequest($"B³¹d podczas rejestracji u¿ytkownika: {result.ErrorMessage}.");
+            return BadRequest($"{result.ErrorMessage}");
         }
 
         [HttpPost]
@@ -43,14 +51,14 @@ namespace FinanceSystemAPI.Controllers
 
             if (user is null)
             {
-                return BadRequest("B³êdne dane logowania");
+                return BadRequest("Podano b³êdne dane logowania. Spróbuj ponownie.");
             }
 
             var hash = new PasswordHasher().HashPassword(credentials.Password, user.Salt);
 
             if (hash != user.Hash)
             {
-                return BadRequest("B³êdne dane logowania");
+                return BadRequest("Podano b³êdne dane logowania. Spróbuj ponownie.");
             }
 
             return Ok(ProcessTokens(credentials.Email, user.Role_Id, user.Id, dal));            

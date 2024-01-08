@@ -17,8 +17,8 @@ export class UserLayoutComponent {
   routes: NavbarItem[] = [
     new NavbarItem("Dzień dobry!", "..\\..\\assets\\user-layout\\logo.png", "/"),
     new NavbarItem("Wpływy", "..\\..\\assets\\user-layout\\earnings.png", "earnings"),
-    new NavbarItem("Oszczędności", "..\\..\\assets\\user-layout\\savings.png", "savings"),
     new NavbarItem("Wydatki", "..\\..\\assets\\user-layout\\expenses.png", "expenses"),
+    new NavbarItem("Prognozy", "..\\..\\assets\\user-layout\\forecasts.png", "forecasts"),
     new NavbarItem("Połącz użytkownika", "..\\..\\assets\\user-layout\\connect-user.png", "connectUser")
   ];
   currentTab: NavbarItem = this.routes[0];
